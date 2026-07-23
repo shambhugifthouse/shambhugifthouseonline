@@ -8,10 +8,10 @@ def business_profile(request):
                 shop_name="SHAMBHU GIFT HOUSE",
                 tagline="Gifts, Toys, Stationeries, Xerox & Printing Center",
                 owner_name="Shambhu Nath",
-                phone="+91 9876543210",
+                phone="+91 9139090903",
                 email="contact@shambhugifthouse.com",
                 gstin="10AAAAA0000A1Z5",
-                address="Main Road, Market Complex, City Center",
+                address="Dhandarphal Bk, Sangamner, Ahilyanagar, 422603",
                 receipt_header="Thank you for shopping at SHAMBHU GIFT HOUSE!",
                 receipt_footer="Goods once sold can be exchanged within 7 days. No Cash Refund."
             )
@@ -20,10 +20,10 @@ def business_profile(request):
             "shop_name": "SHAMBHU GIFT HOUSE",
             "tagline": "Gifts, Toys, Stationeries, Xerox & Printing Center",
             "owner_name": "Shambhu Nath",
-            "phone": "+91 9876543210",
+            "phone": "+91 9139090903",
             "email": "contact@shambhugifthouse.com",
             "gstin": "10AAAAA0000A1Z5",
-            "address": "Main Road, Market Complex, City Center",
+            "address": "Dhandarphal Bk, Sangamner, Ahilyanagar, 422603",
             "receipt_header": "Thank you for shopping at SHAMBHU GIFT HOUSE!",
             "receipt_footer": "Goods once sold can be exchanged within 7 days. No Cash Refund."
         }

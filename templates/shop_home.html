@@ -506,7 +506,7 @@
                                     <small class="text-muted font-monospace">SKU: {{ p.sku }}</small>
                                 </div>
 
-                                <a href="https://wa.me/919876543210?text=Hello%20Shambhu%20Gift%20House!%20I%20want%20to%20buy:%20{{ p.name|urlencode }}%20(SKU:%20{{ p.sku }}%20-%20Price:%20₹{{ p.selling_price }})" target="_blank" class="btn-whatsapp-order">
+                                <a href="https://wa.me/919139090903?text=Hello%20Shambhu%20Gift%20House!%20I%20want%20to%20inquire%20/%20buy:%0A%0A*%F0%9F%8E%81%20Product:*%20{{ p.name|urlencode }}%0A*%F0%9F%8F%B7%EF%B8%8F%20SKU:*%20{{ p.sku }}%0A*%F0%9F%92%B5%20Price:*%20%E2%82%B9{{ p.selling_price }}{% if p.image %}%0A*%F0%9F%96%BC%EF%B8%8F%20Product%20Image:*%20{{ request.scheme }}://{{ request.get_host }}{{ p.image.url|urlencode }}{% endif %}" target="_blank" class="btn-whatsapp-order">
                                     <i class="fa-brands fa-whatsapp fs-5"></i> Direct WhatsApp Order
                                 </a>
                             </div>
@@ -563,7 +563,7 @@
     </section>
 
     <!-- Floating Sticky WhatsApp Order Button -->
-    <a href="https://wa.me/919876543210?text=Hi%20Shambhu%20Gift%20House!%20I%20have%20an%20inquiry%20regarding%20gifts%20and%20printing%20services." target="_blank" class="whatsapp-float-btn" title="Contact Shambhu Gift House on WhatsApp">
+    <a href="https://wa.me/919139090903?text=Hi%20Shambhu%20Gift%20House!%20I%20have%20an%20inquiry%20regarding%20gifts%20and%20printing%20services." target="_blank" class="whatsapp-float-btn" title="Contact Shambhu Gift House on WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 

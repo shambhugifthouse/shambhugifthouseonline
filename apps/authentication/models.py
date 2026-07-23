@@ -35,7 +35,7 @@ class BusinessProfile(models.Model):
     shop_name = models.CharField(max_length=150, default="SHAMBHU GIFT HOUSE")
     tagline = models.CharField(max_length=200, default="Gifts, Toys, Stationeries, Xerox & Printing Center")
     owner_name = models.CharField(max_length=100, default="Shambhu Nath")
-    phone = models.CharField(max_length=20, default="+91 9139090903")
+    phone = models.CharField(max_length=20, default="+91 8975027902")
     email = models.EmailField(default="contact@shambhugifthouse.com")
     gstin = models.CharField(max_length=20, default="10AAAAA0000A1Z5")
     address = models.TextField(default="Dhandarphal Bk, Sangamner, Ahilyanagar, 422603")

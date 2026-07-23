@@ -395,11 +395,8 @@
 
             <!-- Right Actions -->
             <div class="d-flex align-items-center gap-2">
-                <a href="#services" class="btn btn-sm btn-light rounded-pill px-3.5 py-2 fw-bold border d-none d-md-inline-flex align-items-center gap-1.5">
-                    <i class="fa-solid fa-print text-primary"></i> Services Rates
-                </a>
-                <a href="{% url 'auth:login' %}" class="btn btn-sm btn-dark rounded-pill px-4 py-2.5 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
-                    <i class="fa-solid fa-cash-register text-warning"></i> Admin POS Terminal
+                <a href="{% url 'dashboard:dashboard' %}" class="btn btn-sm btn-dark rounded-pill px-4 py-2.5 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-warning"></i> Admin Dashboard
                 </a>
             </div>
         </header>

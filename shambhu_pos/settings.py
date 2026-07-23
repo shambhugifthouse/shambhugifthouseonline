@@ -81,6 +81,10 @@ ASGI_APPLICATION = 'shambhu_pos.asgi.application'
 # Database - Supabase Cloud PostgreSQL / Render DATABASE_URL
 db_url = os.environ.get('DATABASE_URL')
 if db_url:
+    # Fail-safe: Convert direct IPv6 Supabase host to IPv4 Pooler host for Render
+    if 'db.caakvjsfxqrvlznfwfry.supabase.co' in db_url:
+        db_url = db_url.replace('db.caakvjsfxqrvlznfwfry.supabase.co', 'aws-0-ap-southeast-1.pooler.supabase.com')
+        db_url = db_url.replace('://postgres:', '://postgres.caakvjsfxqrvlznfwfry:')
     DATABASES = {
         'default': dj_database_url.config(default=db_url, conn_max_age=600, conn_health_checks=True)
     }

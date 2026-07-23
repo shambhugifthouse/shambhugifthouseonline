@@ -76,14 +76,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shambhu_pos.wsgi.application'
 ASGI_APPLICATION = 'shambhu_pos.asgi.application'
 
-# Database
+# Database - Supabase Cloud PostgreSQL
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'OPTIONS': {
-            'timeout': 20,
-        }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'Sangamner@2026',
+        'HOST': 'db.caakvjsfxqrvlznfwfry.supabase.co',
+        'PORT': '5432',
     }
 }
 

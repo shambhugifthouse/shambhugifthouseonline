@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: shambhugifthouseonline
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn shambhu_pos.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        value: "postgresql://postgres:Sangamner%402026@db.caakvjsfxqrvlznfwfry.supabase.co:5432/postgres"

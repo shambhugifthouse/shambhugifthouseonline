@@ -78,7 +78,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shambhu_pos.wsgi.application'
 ASGI_APPLICATION = 'shambhu_pos.asgi.application'
 
-# Database - Supabase Cloud PostgreSQL via IPv4 Pooler
+# Database - Supabase Cloud PostgreSQL via IPv4 Transaction Pooler (Port 6543)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -86,8 +86,8 @@ DATABASES = {
         'USER': 'postgres.caakvjsfxqrvlznfwfry',
         'PASSWORD': 'Sangamner@2026',
         'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
-        'PORT': '5432',
-        'CONN_MAX_AGE': 600,
+        'PORT': '6543',
+        'CONN_MAX_AGE': 0,
     }
 }
 

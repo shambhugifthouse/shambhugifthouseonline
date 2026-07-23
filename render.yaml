@@ -12,4 +12,4 @@ services:
       - key: DEBUG
         value: "False"
       - key: DATABASE_URL
-        value: "postgresql://postgres.caakvjsfxqrvlznfwfry:Sangamner%402026@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+        value: "postgresql://postgres.caakvjsfxqrvlznfwfry:Sangamner%402026@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block page_title %}System & Account Settings{% endblock %}
+{% block page_subtitle %}Manage business profile, shop information & user password{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h6 class="fw-bold mb-3"><i class="fa-solid fa-store me-2 text-primary"></i> Business & Receipt Profile</h6>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Shop / Business Name</label>
+                    <input type="text" class="form-control" value="{{ shop.shop_name }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Tagline</label>
+                    <input type="text" class="form-control" value="{{ shop.tagline }}" readonly>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="form-label fw-bold small">Phone Contact</label>
+                        <input type="text" class="form-control" value="{{ shop.phone }}" readonly>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-bold small">GSTIN Number</label>
+                        <input type="text" class="form-control font-monospace" value="{{ shop.gstin }}" readonly>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h6 class="fw-bold mb-3"><i class="fa-solid fa-lock me-2 text-primary"></i> Change Password</h6>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Current Password</label>
+                    <input type="password" name="old_password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">New Password</label>
+                    <input type="password" name="new_password" class="form-control" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold small">Confirm New Password</label>
+                    <input type="password" name="confirm_password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                    <i class="fa-solid fa-key me-1"></i> Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

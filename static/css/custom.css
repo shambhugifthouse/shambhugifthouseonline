@@ -1,0 +1,81 @@
+/* Shambhu Gift House POS - Custom Design System */
+:root {
+    --primary: #4F46E5;
+    --primary-hover: #4338CA;
+    --secondary: #0EA5E9;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --dark: #0F172A;
+    --light-bg: #F8FAFC;
+    --card-bg: #FFFFFF;
+    --border-color: #E2E8F0;
+    --text-muted: #64748B;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark);
+}
+
+.sidebar {
+    width: 260px;
+    background: var(--dark);
+    min-height: 100vh;
+    color: white;
+}
+
+.sidebar .nav-link {
+    color: #94A3B8;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    background: var(--primary);
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.badge-soft-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+    font-weight: 700;
+}
+
+.badge-soft-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    font-weight: 700;
+}
+
+.badge-soft-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+    font-weight: 700;
+}

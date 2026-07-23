@@ -1,0 +1,606 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHAMBHU GIFT HOUSE — Gifts, Toys, Stationery & High-Speed Xerox Center</title>
+
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-indigo: #4F46E5;
+            --primary-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #EC4899 100%);
+            --pink-accent: #EC4899;
+            --amber-accent: #F59E0B;
+            --emerald-accent: #10B981;
+            --dark-surface: #0F172A;
+            --text-main: #0F172A;
+            --text-sub: #64748B;
+            --bg-canvas: #F8FAFC;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glass Floating Dock Header */
+        .store-nav-wrapper {
+            position: sticky;
+            top: 1rem;
+            z-index: 1050;
+            display: flex;
+            justify-content: center;
+            padding: 0 1rem;
+        }
+
+        .store-nav-pill {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(226, 232, 240, 0.6);
+            border-radius: 100px;
+            padding: 0.6rem 0.9rem 0.6rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+            transition: all 0.3s ease;
+        }
+
+        .store-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .store-brand-icon {
+            width: 46px;
+            height: 46px;
+            background: var(--primary-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.35rem;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+        }
+
+        .store-brand-text {
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: var(--dark-surface);
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+
+        .store-brand-text span {
+            color: var(--pink-accent);
+        }
+
+        .status-pill-active {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: var(--emerald-accent);
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.85rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--emerald-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Hero Banner Container */
+        .hero-banner-container {
+            position: relative;
+            margin: 1.5rem auto 3rem;
+            max-width: 1200px;
+            padding: 0 1rem;
+        }
+
+        .hero-card-glass {
+            position: relative;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 27, 75, 0.82) 100%),
+                        url("/media/banners/hero.png") center center / cover no-repeat;
+            border-radius: 36px;
+            padding: 4.5rem 3rem;
+            color: white;
+            box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.35);
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #FDE68A;
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 0.5rem 1.35rem;
+            border-radius: 50px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-headline-large {
+            font-size: 4.2rem;
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-highlight-text {
+            background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #EC4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glass Search Card */
+        .search-hero-wrapper {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 0.4rem;
+            max-width: 680px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-hero-input {
+            border: none;
+            background: transparent;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .search-hero-input::placeholder {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .search-hero-btn {
+            background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.85rem 2rem;
+            font-weight: 800;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .search-hero-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(236, 72, 153, 0.6);
+        }
+
+        /* Category Filter Pills */
+        .category-pill-btn {
+            background: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            color: var(--dark-surface);
+            padding: 0.65rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        .category-pill-btn:hover,
+        .category-pill-btn.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 8px 22px rgba(79, 70, 229, 0.35);
+            transform: translateY(-2px);
+        }
+
+        /* Product Cards */
+        .product-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(79, 70, 229, 0.4);
+            box-shadow: 0 30px 60px rgba(79, 70, 229, 0.16);
+        }
+
+        .product-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: #F8FAFC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.1);
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: linear-gradient(135deg, #EF4444 0%, #F43F5E 100%);
+            color: white;
+            font-weight: 800;
+            font-size: 0.78rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 50px;
+            box-shadow: 0 8px 18px rgba(239, 68, 68, 0.4);
+        }
+
+        .rating-badge {
+            position: absolute;
+            bottom: 14px;
+            left: 14px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            color: #FDE68A;
+            font-weight: 800;
+            font-size: 0.72rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 50px;
+        }
+
+        .btn-whatsapp-order {
+            background: #25D366;
+            color: white;
+            font-weight: 800;
+            font-size: 0.92rem;
+            border-radius: 50px;
+            padding: 0.75rem 1.4rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.35);
+            width: 100%;
+        }
+
+        .btn-whatsapp-order:hover {
+            background: #1DA851;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(37, 211, 102, 0.5);
+        }
+
+        /* Floating Sticky WhatsApp Button */
+        .whatsapp-float-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 64px;
+            height: 64px;
+            background: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 14px 35px rgba(37, 211, 102, 0.5);
+            z-index: 999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-float-btn:hover {
+            transform: scale(1.12) rotate(8deg);
+            color: white;
+        }
+
+        @media (max-width: 960px) {
+            .hero-headline-large {
+                font-size: 2.8rem;
+            }
+            .hero-card-glass {
+                padding: 3rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation Dock -->
+    <div class="store-nav-wrapper">
+        <header class="store-nav-pill">
+            <a href="{% url 'store_home' %}" class="store-brand">
+                <div class="store-brand-icon">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <div>
+                    <div class="store-brand-text">SHAMBHU <span>GIFT HOUSE</span></div>
+                    <span class="status-pill-active mt-1"><span class="pulse-dot"></span> Store Open • 9 AM - 9 PM</span>
+                </div>
+            </a>
+
+            <!-- Right Actions -->
+            <div class="d-flex align-items-center gap-2">
+                <a href="#services" class="btn btn-sm btn-light rounded-pill px-3.5 py-2 fw-bold border d-none d-md-inline-flex align-items-center gap-1.5">
+                    <i class="fa-solid fa-print text-primary"></i> Services Rates
+                </a>
+                <a href="{% url 'auth:login' %}" class="btn btn-sm btn-dark rounded-pill px-4 py-2.5 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                    <i class="fa-solid fa-cash-register text-warning"></i> Admin POS Terminal
+                </a>
+            </div>
+        </header>
+    </div>
+
+    <!-- Hero Showcase Section -->
+    <div class="hero-banner-container">
+        <div class="hero-card-glass">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="hero-badge">
+                        <i class="fa-solid fa-sparkles"></i> SHAMBHU GIFT HOUSE • GIFTS & PRINTING CENTER
+                    </div>
+
+                    <h1 class="hero-headline-large">
+                        Unique Gifts, Soft Toys <br><span class="hero-highlight-text">& High-Speed Xerox Center.</span>
+                    </h1>
+
+                    <p class="fs-5 mb-4 text-light opacity-90" style="max-width: 640px; font-weight: 500;">
+                        {{ shop.tagline|default:"Gifts, Toys, Stationeries, Xerox & Printing Center" }}. Explore our latest catalog, check prices, or place direct WhatsApp orders with fast local pickup!
+                    </p>
+
+                    <!-- Interactive Glass Search Bar -->
+                    <form method="GET" action="{% url 'store_home' %}" class="search-hero-wrapper mb-3">
+                        <i class="fa-solid fa-magnifying-glass text-light fs-5 ps-3 opacity-75"></i>
+                        <input type="text" name="q" value="{{ search_query }}" class="search-hero-input" placeholder="Search teddy bear, crystal frames, Parker pens, Xerox rates...">
+                        <button type="submit" class="search-hero-btn">
+                            <i class="fa-solid fa-search me-1"></i> Search Catalog
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-lg-4 text-center text-lg-end d-none d-lg-block">
+                    <div class="bg-white bg-opacity-10 backdrop-blur rounded-4 p-4 border border-white border-opacity-25 text-center shadow-lg">
+                        <i class="fa-solid fa-store fs-1 text-warning mb-3 d-block"></i>
+                        <h4 class="fw-bold text-white mb-1">Retail Store Counter</h4>
+                        <p class="small text-light opacity-75 mb-3">{{ shop.address }}</p>
+                        <div class="badge bg-success bg-opacity-25 text-success border border-success fw-bold px-3 py-2 fs-6">
+                            <i class="fa-solid fa-phone me-1"></i> {{ shop.phone }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <section class="mb-5">
+        <div class="container text-center">
+            <div class="d-flex justify-content-center gap-2.5 flex-wrap">
+                <a href="{% url 'store_home' %}" class="category-pill-btn {% if not category_id %}active{% endif %}">
+                    <i class="fa-solid fa-border-all"></i> All Products
+                </a>
+                {% for cat in categories %}
+                <a href="?category={{ cat.id }}" class="category-pill-btn {% if category_id == cat.id|stringformat:'s' %}active{% endif %}">
+                    <i class="fa-solid {{ cat.icon|default:'fa-box' }}"></i> {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Catalog Showcase Grid -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h2 class="fw-bold mb-0 font-heading">Featured Shop Catalog</h2>
+                    <p class="text-muted small mb-0">Browse latest arrivals, gifts, toys & stationery items</p>
+                </div>
+                <span class="badge bg-light text-dark border px-3 py-2.5 fw-bold font-monospace fs-6">{{ products|length }} Items Available</span>
+            </div>
+
+            <div class="row g-4">
+                {% for p in products %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img-wrapper">
+                            {% if p.image %}
+                            <img src="{{ p.image.url }}" alt="{{ p.name }}" class="product-img">
+                            {% else %}
+                            <div class="text-center p-3 text-secondary">
+                                <i class="fa-solid {{ p.category.icon|default:'fa-gift' }} fs-1 mb-2 d-block text-primary"></i>
+                                <span class="badge bg-white text-dark border font-monospace small">SHAMBHU GIFT</span>
+                            </div>
+                            {% endif %}
+
+                            {% if p.discount_percent > 0 %}
+                            <span class="discount-badge">-{{ p.discount_percent }}% OFF</span>
+                            {% endif %}
+
+                            <span class="rating-badge">⭐ 4.9 (120+ Reviews)</span>
+                        </div>
+
+                        <div class="p-3.5 d-flex flex-column flex-grow-1 p-3">
+                            <span class="text-primary fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ p.category.name|default:"General Gift" }}</span>
+                            <h6 class="fw-bold text-dark mb-2 text-truncate font-heading" title="{{ p.name }}" style="font-size: 1.05rem;">{{ p.name }}</h6>
+
+                            <div class="mt-auto pt-3 border-top">
+                                <div class="d-flex align-items-baseline justify-content-between mb-3">
+                                    <div>
+                                        <h3 class="fw-bold text-success mb-0 font-heading">₹{{ p.selling_price }}</h3>
+                                        {% if p.mrp > p.selling_price %}
+                                        <small class="text-muted text-decoration-line-through">MRP ₹{{ p.mrp }}</small>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted font-monospace">SKU: {{ p.sku }}</small>
+                                </div>
+
+                                <a href="https://wa.me/919876543210?text=Hello%20Shambhu%20Gift%20House!%20I%20want%20to%20buy:%20{{ p.name|urlencode }}%20(SKU:%20{{ p.sku }}%20-%20Price:%20₹{{ p.selling_price }})" target="_blank" class="btn-whatsapp-order">
+                                    <i class="fa-brands fa-whatsapp fs-5"></i> Direct WhatsApp Order
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5 text-muted">
+                    <i class="fa-solid fa-box-open fs-1 d-block mb-3 text-secondary"></i>
+                    <h4>No products found matching your search.</h4>
+                    <p class="small">Try clearing search filters or browse all categories.</p>
+                    <a href="{% url 'store_home' %}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Reset Search</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Xerox & Services Rate Card Bento Section -->
+    <section id="services" class="py-5" style="background: #F1F5F9;">
+        <div class="container">
+            <div class="text-center max-w-600 mx-auto mb-5" style="max-width: 680px;">
+                <span class="hero-badge bg-primary text-white border-0 mb-2"><i class="fa-solid fa-print"></i> INSTANT COUNTER SERVICES</span>
+                <h2 class="fw-bold mb-2 font-heading">Xerox, Color Printing & DTP Rates</h2>
+                <p class="text-secondary font-medium">High-speed laser printing, Xerox photocopying, passport photos, lamination, and spiral book binding.</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                {% for s in services %}
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                <i class="fa-solid fa-print fs-4"></i>
+                            </div>
+                            <span class="badge bg-light text-dark border font-monospace">{{ s.get_category_display }}</span>
+                        </div>
+                        <h5 class="fw-bold mb-1 font-heading">{{ s.name }}</h5>
+                        <p class="text-muted small mb-3">{{ s.description|default:"Instant counter processing" }}</p>
+                        
+                        <div class="mt-auto d-flex align-items-baseline justify-content-between pt-3 border-top">
+                            <span class="text-muted small fw-bold">Standard Rate:</span>
+                            <h3 class="fw-bold text-success mb-0 font-heading">₹{{ s.price }} <small class="fs-6 text-muted">/ {{ s.unit_name }}</small></h3>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center text-muted py-4">
+                    <i class="fa-solid fa-print fs-2 d-block mb-2"></i> Xerox & printing services available at store counter.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Sticky WhatsApp Order Button -->
+    <a href="https://wa.me/919876543210?text=Hi%20Shambhu%20Gift%20House!%20I%20have%20an%20inquiry%20regarding%20gifts%20and%20printing%20services." target="_blank" class="whatsapp-float-btn" title="Contact Shambhu Gift House on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="bg-primary rounded-3 p-2.5 text-white">
+                            <i class="fa-solid fa-gift fs-4"></i>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-white font-heading">{{ shop.shop_name|default:"SHAMBHU GIFT HOUSE" }}</h3>
+                    </div>
+                    <p class="text-secondary small max-w-400" style="max-width: 440px;">
+                        {{ shop.tagline|default:"Gifts, Toys, Stationeries, Xerox & Printing Center" }}. Quality gifts, soft toys, notebooks, school supplies, and digital printing services.
+                    </p>
+                </div>
+
+                <div class="col-md-6 text-md-end">
+                    <h6 class="fw-bold text-white mb-2">Store Address & Contact:</h6>
+                    <div class="text-secondary small mb-1"><i class="fa-solid fa-location-dot text-danger me-2"></i> {{ shop.address }}</div>
+                    <div class="text-secondary small mb-1"><i class="fa-solid fa-phone text-success me-2"></i> {{ shop.phone }}</div>
+                    <div class="text-secondary small"><i class="fa-solid fa-file-invoice text-warning me-2"></i> GSTIN: {{ shop.gstin }}</div>
+                </div>
+            </div>
+
+            <div class="border-top border-secondary border-opacity-25 pt-4 text-center text-secondary small">
+                © 2026 {{ shop.shop_name|default:"SHAMBHU GIFT HOUSE" }}. All rights reserved. Powered by Shambhu POS System.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

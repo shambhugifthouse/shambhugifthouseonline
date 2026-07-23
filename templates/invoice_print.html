@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt #{{ invoice.invoice_number }}</title>
+    <style>
+        @page {
+            size: 80mm 200mm;
+            margin: 0;
+        }
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            width: 78mm;
+            margin: 0 auto;
+            padding: 5mm;
+            font-size: 12px;
+            color: #000;
+        }
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        .fw-bold { font-weight: bold; }
+        .border-top { border-top: 1px dashed #000; margin-top: 4px; padding-top: 4px; }
+        .border-bottom { border-bottom: 1px dashed #000; margin-bottom: 4px; padding-bottom: 4px; }
+        table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+        th, td { text-align: left; padding: 2px 0; font-size: 11px; }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="text-center">
+        <h3 class="fw-bold" style="margin: 0;">{{ shop.shop_name|default:"SHAMBHU GIFT HOUSE" }}</h3>
+        <div style="font-size: 10px;">{{ shop.tagline }}</div>
+        <div style="font-size: 10px;">Ph: {{ shop.phone }} | GSTIN: {{ shop.gstin }}</div>
+    </div>
+
+    <div class="border-top border-bottom" style="margin-top: 8px;">
+        <div>Inv #: {{ invoice.invoice_number }}</div>
+        <div>Date : {{ invoice.created_at|date:"d-m-Y h:i A" }}</div>
+        <div>Cust : {{ invoice.customer_name }}</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr class="border-bottom">
+                <th>Item</th>
+                <th class="text-center">Qty</th>
+                <th class="text-end">Price</th>
+                <th class="text-end">Amt</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-end">{{ item.unit_price }}</td>
+                <td class="text-end">{{ item.total_amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="border-top">
+        <div class="text-end">Subtotal : ₹{{ invoice.subtotal }}</div>
+        <div class="text-end">GST Tax  : ₹{{ invoice.gst_amount }}</div>
+        {% if invoice.discount_amount > 0 %}
+        <div class="text-end">Discount : -₹{{ invoice.discount_amount }}</div>
+        {% endif %}
+        <div class="text-end fw-bold" style="font-size: 14px; margin-top: 4px;">TOTAL : ₹{{ invoice.grand_total }}</div>
+        <div class="text-end">Paid via: {{ invoice.get_payment_mode_display }}</div>
+    </div>
+
+    <div class="text-center border-top" style="margin-top: 10px; font-size: 10px;">
+        <p>{{ shop.receipt_header|default:"Thank you for shopping!" }}</p>
+        <p style="margin-top: 4px;">{{ shop.receipt_footer }}</p>
+    </div>
+</body>
+</html>

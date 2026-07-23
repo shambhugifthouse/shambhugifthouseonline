@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Quick POS Billing Terminal{% endblock %}
+{% block page_subtitle %}Fast checkout, barcode scan, custom items & instant receipt generation{% endblock %}
+
+{% block content %}
+<div class="row g-4" id="posContainer">
+    <!-- Left Column: Product Search & Quick Grid -->
+    <div class="col-lg-7">
+        <!-- Search Bar & Barcode Scanner Input -->
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
+            <div class="card-body p-3">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-barcode text-primary"></i></span>
+                    <input type="text" id="barcodeSearch" class="form-control border-start-0 fs-6" placeholder="Scan Barcode or type Product Name / SKU..." autofocus>
+                    <button class="btn btn-primary px-4 fw-bold" id="searchBtn"><i class="fa-solid fa-search"></i> Search</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="d-flex gap-2 overflow-auto pb-2 mb-3">
+            <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold filter-cat-btn" data-cat="">All Items</button>
+            {% for cat in categories %}
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 filter-cat-btn" data-cat="{{ cat.id }}">{{ cat.name }}</button>
+            {% endfor %}
+        </div>
+
+        <!-- Product Grid -->
+        <div class="row g-3" id="productGrid" style="max-height: 520px; overflow-y: auto;">
+            {% for p in products %}
+            <div class="col-md-4 product-card-item" data-cat="{{ p.category_id|default:'' }}">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 product-select-card" style="cursor: pointer;" onclick="addToCart({{ p.id }}, '{{ p.name|escapejs }}', {{ p.selling_price }}, {{ p.gst_percent }})">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-light text-dark border small font-monospace">{{ p.sku }}</span>
+                        <span class="badge bg-success bg-opacity-10 text-success fw-bold">₹{{ p.selling_price }}</span>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 text-truncate">{{ p.name }}</h6>
+                    <small class="text-muted d-block">Stock: {{ p.stock_quantity }} {{ p.unit }}</small>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="fa-solid fa-boxes-stacked fs-1 d-block mb-2"></i> No products available in catalog.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Right Column: Cart & Checkout Summary -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 h-100 d-flex flex-column">
+            <!-- Customer Info Header -->
+            <div class="card-header bg-white border-bottom p-3">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <input type="text" id="custPhone" class="form-control form-control-sm" placeholder="Customer Mobile (Optional)">
+                    </div>
+                    <div class="col-6">
+                        <input type="text" id="custName" class="form-control form-control-sm" placeholder="Customer Name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Items Table -->
+            <div class="card-body p-0 flex-grow-1 overflow-auto" style="min-height: 280px; max-height: 380px;">
+                <table class="table table-hover align-middle mb-0" id="cartTable">
+                    <thead class="bg-light text-muted small">
+                        <tr>
+                            <th class="ps-3">Item</th>
+                            <th style="width: 90px;">Qty</th>
+                            <th>Price</th>
+                            <th class="pe-3 text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartItems">
+                        <!-- Dynamic Cart Rows -->
+                        <tr id="emptyCartRow">
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-cart-shopping fs-2 d-block mb-2 text-secondary"></i>
+                                Cart is empty. Click items on the left to add.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Payment & Summary Footer -->
+            <div class="card-footer bg-white border-top p-3">
+                <div class="d-flex justify-content-between mb-1 small text-muted">
+                    <span>Subtotal:</span>
+                    <span id="subtotalVal">₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1 small text-muted">
+                    <span>GST Tax:</span>
+                    <span id="gstVal">₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-secondary">Discount (₹):</span>
+                    <input type="number" id="discountVal" class="form-control form-control-sm text-end w-25" value="0.00" onchange="renderCartTotals()">
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Grand Total:</h5>
+                    <h4 class="fw-bold text-primary mb-0" id="grandTotalVal">₹0.00</h4>
+                </div>
+
+                <!-- Payment Mode Selector -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">Payment Mode</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="paymentMode" id="payCash" value="CASH" checked>
+                        <label class="btn btn-outline-primary fw-bold btn-sm py-2" for="payCash"><i class="fa-solid fa-money-bill me-1"></i> Cash</label>
+
+                        <input type="radio" class="btn-check" name="paymentMode" id="payUPI" value="UPI">
+                        <label class="btn btn-outline-primary fw-bold btn-sm py-2" for="payUPI"><i class="fa-solid fa-qrcode me-1"></i> UPI / QR</label>
+
+                        <input type="radio" class="btn-check" name="paymentMode" id="payKhata" value="KHATA">
+                        <label class="btn btn-outline-warning fw-bold btn-sm py-2" for="payKhata"><i class="fa-solid fa-book me-1"></i> Khata</label>
+                    </div>
+                </div>
+
+                <!-- Complete Sale Button -->
+                <button type="button" class="btn btn-success w-100 py-3 rounded-3 fw-bold fs-6 shadow-sm" id="checkoutBtn" onclick="submitCheckout()">
+                    <i class="fa-solid fa-check-circle me-2"></i> COMPLETE BILL & PRINT
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+let cart = [];
+
+function addToCart(id, name, price, gst) {
+    let existing = cart.find(item => item.id === id);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ id: id, name: name, price: price, gst_percent: gst, quantity: 1, item_type: 'PRODUCT' });
+    }
+    renderCart();
+}
+
+function updateQty(id, change) {
+    let item = cart.find(i => i.id === id);
+    if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
+    }
+    renderCart();
+}
+
+function renderCart() {
+    const tbody = document.getElementById('cartItems');
+    if (cart.length === 0) {
+        tbody.innerHTML = `<tr id="emptyCartRow"><td colspan="4" class="text-center py-5 text-muted"><i class="fa-solid fa-cart-shopping fs-2 d-block mb-2 text-secondary"></i> Cart is empty.</td></tr>`;
+        renderCartTotals();
+        return;
+    }
+
+    let html = '';
+    cart.forEach(item => {
+        let total = (item.price * item.quantity).toFixed(2);
+        html += `
+            <tr>
+                <td class="ps-3">
+                    <span class="fw-bold d-block text-dark small">${item.name}</span>
+                    <small class="text-muted">₹${item.price.toFixed(2)} each</small>
+                </td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <button class="btn btn-outline-secondary px-1 py-0" onclick="updateQty(${item.id}, -1)">-</button>
+                        <span class="form-control text-center px-1 py-0 bg-light">${item.quantity}</span>
+                        <button class="btn btn-outline-secondary px-1 py-0" onclick="updateQty(${item.id}, 1)">+</button>
+                    </div>
+                </td>
+                <td class="small">₹${item.price.toFixed(2)}</td>
+                <td class="pe-3 text-end fw-bold">₹${total}</td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+    renderCartTotals();
+}
+
+function renderCartTotals() {
+    let subtotal = 0;
+    let totalGst = 0;
+
+    cart.forEach(item => {
+        let itemSub = item.price * item.quantity;
+        let itemGst = (itemSub * item.gst_percent) / 100;
+        subtotal += itemSub;
+        totalGst += itemGst;
+    });
+
+    let discount = parseFloat(document.getElementById('discountVal').value) || 0;
+    let grandTotal = Math.max(0, subtotal + totalGst - discount);
+
+    document.getElementById('subtotalVal').innerText = '₹' + subtotal.toFixed(2);
+    document.getElementById('gstVal').innerText = '₹' + totalGst.toFixed(2);
+    document.getElementById('grandTotalVal').innerText = '₹' + grandTotal.toFixed(2);
+}
+
+function submitCheckout() {
+    if (cart.length === 0) {
+        alert("Cart is empty! Select products to generate bill.");
+        return;
+    }
+
+    const payload = {
+        customer_phone: document.getElementById('custPhone').value,
+        customer_name: document.getElementById('custName').value,
+        payment_mode: document.querySelector('input[name="paymentMode"]:checked').value,
+        discount_amount: parseFloat(document.getElementById('discountVal').value) || 0,
+        items: cart
+    };
+
+    fetch("{% url 'billing:checkout' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(`Bill generated successfully! Invoice #: ${data.invoice_number}`);
+            window.open(`/billing/invoice/${data.invoice_id}/print/`, '_blank');
+            cart = [];
+            renderCart();
+            document.getElementById('custPhone').value = '';
+            document.getElementById('custName').value = '';
+        } else {
+            alert("Error creating bill: " + data.message);
+        }
+    })
+    .catch(err => alert("Server error generating invoice"));
+}
+</script>
+{% endblock %}
+{% endblock %}

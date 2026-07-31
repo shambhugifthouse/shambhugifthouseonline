@@ -137,10 +137,16 @@ REST_FRAMEWORK = {
     ],
 }
 
-# CORS settings
+# CORS & CSRF settings
 CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = [
+    'https://shambhugifthouse.store',
+    'https://www.shambhugifthouse.store',
+    'https://*.onrender.com',
+]
 
 # Authentication URLs
 LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/auth/login/'
+

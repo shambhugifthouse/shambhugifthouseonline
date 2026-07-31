@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 650" width="100%" height="100%">
+  <defs>
+    <!-- Metallic Gold Gradient -->
+    <linearGradient id="goldGradTransparent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7DF94"/>
+      <stop offset="25%" stop-color="#E5C158"/>
+      <stop offset="65%" stop-color="#C2922E"/>
+      <stop offset="100%" stop-color="#EABF52"/>
+    </linearGradient>
+
+    <!-- Silver/Dark Monogram for Light Backgrounds -->
+    <linearGradient id="silverGradTransparent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="50%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+
+    <filter id="shadowTransparent" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Logo Group -->
+  <g transform="translate(0, -10)" filter="url(#shadowTransparent)">
+
+    <!-- ==================== EMBLEM ICON ==================== -->
+    <g transform="translate(400, 180) scale(0.72)">
+      <!-- RIBBON BOW -->
+      <path d="M 0 -70 C -55 -225, -205 -210, -155 -115 C -125 -60, 0 -70, 0 -70 Z" 
+            fill="none" stroke="url(#goldGradTransparent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <path d="M 0 -70 C 55 -225, 205 -210, 155 -115 C 125 -60, 0 -70, 0 -70 Z" 
+            fill="none" stroke="url(#goldGradTransparent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Ribbon Left Flowing Tail -->
+      <path d="M -20 -70 C -85 -75, -205 -30, -295 10 C -255 -10, -165 -55, -55 -72 Z" 
+            fill="url(#goldGradTransparent)"/>
+
+      <ellipse cx="0" cy="-72" rx="14" ry="16" fill="url(#goldGradTransparent)"/>
+
+      <!-- GIFT BOX FRAME -->
+      <path d="M -195 0 C -205 60, -215 220, -185 275 C -170 295, 15 295, 25 295" 
+            fill="none" stroke="url(#goldGradTransparent)" stroke-width="13" stroke-linecap="round"/>
+
+      <path d="M 10 -60 L 250 -60 L 250 40 H 135" 
+            fill="none" stroke="url(#goldGradTransparent)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <path d="M 235 40 V 275 C 235 300, 205 310, 75 300 C -75 280, -95 220, -85 175" 
+            fill="none" stroke="url(#goldGradTransparent)" stroke-width="13" stroke-linecap="round"/>
+
+      <path d="M 125 175 H 195 V 230" 
+            fill="none" stroke="url(#goldGradTransparent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- INTERLOCKED "S" MONOGRAM -->
+      <text x="0" y="155" 
+            font-family="'Playfair Display', 'Cinzel', 'Georgia', serif" 
+            font-size="240" 
+            font-weight="700" 
+            fill="url(#silverGradTransparent)" 
+            text-anchor="middle" 
+            style="letter-spacing: -6px;">S</text>
+    </g>
+
+    <!-- ==================== TYPOGRAPHY SECTION ==================== -->
+    <text x="400" y="465" 
+          font-family="'Cinzel', 'Playfair Display', serif" 
+          font-size="76" 
+          font-weight="700" 
+          fill="url(#goldGradTransparent)" 
+          text-anchor="middle" 
+          style="letter-spacing: 16px;">SHAMBHU</text>
+
+    <!-- "— GIFT HOUSE —" Subtitle -->
+    <g transform="translate(400, 525)">
+      <line x1="-240" y1="-8" x2="-140" y2="-8" stroke="url(#goldGradTransparent)" stroke-width="3"/>
+      <text x="0" y="0" 
+            font-family="'Plus Jakarta Sans', 'Montserrat', sans-serif" 
+            font-size="28" 
+            font-weight="700" 
+            fill="url(#goldGradTransparent)" 
+            text-anchor="middle" 
+            style="letter-spacing: 12px;">GIFT HOUSE</text>
+      <line x1="140" y1="-8" x2="240" y2="-8" stroke="url(#goldGradTransparent)" stroke-width="3"/>
+    </g>
+
+    <!-- "GIFTS THAT CREATE SMILES" Tagline -->
+    <text x="400" y="590" 
+          font-family="'Plus Jakarta Sans', 'Montserrat', sans-serif" 
+          font-size="20" 
+          font-weight="600" 
+          fill="url(#goldGradTransparent)" 
+          text-anchor="middle" 
+          opacity="0.9" 
+          style="letter-spacing: 7px;">GIFTS THAT CREATE SMILES</text>
+
+  </g>
+</svg>

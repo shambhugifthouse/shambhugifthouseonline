@@ -7,6 +7,8 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from .models import Product, Category
 from apps.services.models import ServiceItem
+from apps.inventory.models import StockSpending
+from apps.authentication.models import log_action
 
 def public_store_view(request):
     categories = Category.objects.all()
@@ -98,6 +100,17 @@ def product_list_view(request):
                 product.image = request.FILES['image']
                 product.save()
 
+            if product.stock_quantity > 0:
+                total_amt = Decimal(product.stock_quantity) * product.cost_price
+                StockSpending.objects.create(
+                    product=product,
+                    quantity=product.stock_quantity,
+                    unit_cost=product.cost_price,
+                    total_amount=total_amt,
+                    added_by=request.user,
+                    note="Initial Stock on Product Creation"
+                )
+
             log_action(request.user, "Add Product", "Products", f"Created product: {product.name} ({product.sku})", request)
             messages.success(request, f"Product '{product.name}' added successfully!")
             return redirect('products:list')
@@ -105,6 +118,7 @@ def product_list_view(request):
         elif action == 'edit':
             product_id = request.POST.get('product_id')
             product = get_object_or_404(Product, id=product_id)
+            old_stock_quantity = product.stock_quantity
 
             category_obj = Category.objects.filter(id=request.POST.get('category')).first()
             product.name = request.POST.get('name', '').strip()
@@ -113,7 +127,8 @@ def product_list_view(request):
             product.mrp = Decimal(request.POST.get('mrp', '0.00'))
             product.selling_price = Decimal(request.POST.get('selling_price', '0.00'))
             product.gst_percent = Decimal(request.POST.get('gst_percent', '18.00'))
-            product.stock_quantity = int(request.POST.get('stock_quantity', '0'))
+            new_stock_quantity = int(request.POST.get('stock_quantity', '0'))
+            product.stock_quantity = new_stock_quantity
             product.min_stock_level = int(request.POST.get('min_stock_level', '5'))
             product.unit = request.POST.get('unit', 'Pcs')
             product.expiry_date = request.POST.get('expiry_date') or None
@@ -122,6 +137,19 @@ def product_list_view(request):
                 product.image = request.FILES['image']
 
             product.save()
+
+            if new_stock_quantity > old_stock_quantity:
+                added_qty = new_stock_quantity - old_stock_quantity
+                total_amt = Decimal(added_qty) * product.cost_price
+                StockSpending.objects.create(
+                    product=product,
+                    quantity=added_qty,
+                    unit_cost=product.cost_price,
+                    total_amount=total_amt,
+                    added_by=request.user,
+                    note="Stock Quantity Increased via Product Edit"
+                )
+
             log_action(request.user, "Edit Product", "Products", f"Updated product: {product.name}", request)
             messages.success(request, f"Product '{product.name}' updated successfully!")
             return redirect('products:list')

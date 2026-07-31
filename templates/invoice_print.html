@@ -27,10 +27,10 @@
     </style>
 </head>
 <body onload="window.print()">
-    <div class="text-center">
-        <h3 class="fw-bold" style="margin: 0;">{{ shop.shop_name|default:"SHAMBHU GIFT HOUSE" }}</h3>
-        <div style="font-size: 10px;">{{ shop.tagline }}</div>
-        <div style="font-size: 10px;">Ph: {{ shop.phone }} | GSTIN: {{ shop.gstin }}</div>
+{% load static %}
+    <div class="text-center mb-2">
+        <img src="{% static 'images/shambhu_logo_full.svg' %}" alt="SHAMBHU GIFT HOUSE" style="max-width: 65mm; height: auto; display: block; margin: 0 auto 6px auto;">
+        <div style="font-size: 10px; font-weight: bold;">Ph: {{ shop.phone|default:"+91 89750 27902" }} | GSTIN: {{ shop.gstin|default:"27AAACS1234F1Z5" }}</div>
     </div>
 
     <div class="border-top border-bottom" style="margin-top: 8px;">

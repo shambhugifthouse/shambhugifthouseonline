@@ -4,6 +4,7 @@ from django.db.models import Sum, Count
 from django.utils import timezone
 from decimal import Decimal
 from apps.products.models import Product, Category
+from apps.inventory.models import StockSpending
 from apps.billing.models import Invoice, InvoiceItem
 from apps.customers.models import Customer
 from apps.authentication.models import AuditLog
@@ -25,7 +26,11 @@ def dashboard_view(request):
 
     recent_invoices = Invoice.objects.select_related('billed_by')[:8]
     recent_logs = AuditLog.objects.select_related('user')[:8]
+    low_stock_items = [p for p in Product.objects.filter(is_active=True) if p.is_low_stock]
     total_khata = Customer.objects.aggregate(total=Sum('outstanding_balance'))['total'] or Decimal('0.00')
+
+    total_stock_spending = StockSpending.objects.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    recent_stock_spendings = StockSpending.objects.select_related('product', 'added_by')[:5]
 
     context = {
         'today_revenue': today_revenue,
@@ -33,7 +38,10 @@ def dashboard_view(request):
         'monthly_revenue': monthly_revenue,
         'total_products': total_products,
         'low_stock_count': low_stock_count,
+        'low_stock_items': low_stock_items,
         'total_khata': total_khata,
+        'total_stock_spending': total_stock_spending,
+        'recent_stock_spendings': recent_stock_spendings,
         'recent_invoices': recent_invoices,
         'recent_logs': recent_logs,
     }

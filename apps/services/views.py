@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
-from .models import ServiceItem, PrinterConsumable
+from django.db.models import Sum
+
+from .models import ServiceItem, PrinterConsumable, RechargeProvider, RechargeTransaction
 from apps.authentication.models import log_action
 
 @login_required
@@ -117,3 +119,108 @@ def service_list_view(request):
         'low_stock_count': low_stock_count,
     }
     return render(request, 'services.html', context)
+
+
+@login_required
+def recharge_view(request):
+    # Ensure default mobile & DTH providers exist
+    default_providers = [
+        {"name": "Airtel", "code": "AIRTEL", "category": "MOBILE", "balance": Decimal("2000.00"), "logo_color": "#EF4444", "icon_class": "fa-tower-cell"},
+        {"name": "Jio", "code": "JIO", "category": "MOBILE", "balance": Decimal("3000.00"), "logo_color": "#1D4ED8", "icon_class": "fa-bolt"},
+        {"name": "BSNL", "code": "BSNL", "category": "MOBILE", "balance": Decimal("1500.00"), "logo_color": "#059669", "icon_class": "fa-signal"},
+        {"name": "VI", "code": "VI", "category": "MOBILE", "balance": Decimal("1200.00"), "logo_color": "#D97706", "icon_class": "fa-phone"},
+        {"name": "Tatasky", "code": "TATASKY", "category": "DTH", "balance": Decimal("2500.00"), "logo_color": "#7C3AED", "icon_class": "fa-tv"},
+        {"name": "ALL Other", "code": "DTH_OTHER", "category": "DTH", "balance": Decimal("1800.00"), "logo_color": "#475569", "icon_class": "fa-satellite-dish"},
+    ]
+
+    for dp in default_providers:
+        RechargeProvider.objects.get_or_create(
+            code=dp["code"],
+            defaults=dp
+        )
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'perform_recharge':
+            provider_id = request.POST.get('provider_id')
+            customer_number = request.POST.get('customer_number', '').strip()
+            amount = Decimal(request.POST.get('amount', '0.00'))
+            commission = Decimal(request.POST.get('commission', '0.00'))
+
+            provider = get_object_or_404(RechargeProvider, id=provider_id)
+
+            # Auto-calculate 3% commission for mobile recharges (or if commission is 0)
+            if provider.category == 'MOBILE' or commission == Decimal('0.00'):
+                commission = (amount * Decimal('0.03')).quantize(Decimal('0.01'))
+
+            if provider.balance < amount:
+                messages.error(request, f"Insufficient balance in {provider.name}! Available balance: ₹{provider.balance}")
+            else:
+                provider.balance -= amount
+                jio_bonus_applied = False
+
+                # JIO AUTO BONUS OFFER: If Jio balance reaches or drops below 2000, add 5000 credit bonus
+                if provider.code == 'JIO' and provider.balance <= Decimal('2000.00'):
+                    provider.balance += Decimal('5000.00')
+                    jio_bonus_applied = True
+
+                provider.save()
+
+                tx = RechargeTransaction.objects.create(
+                    provider=provider,
+                    customer_number=customer_number,
+                    amount=amount,
+                    commission=commission,
+                    status='SUCCESS',
+                    performed_by=request.user
+                )
+
+                log_action(request.user, "Perform Recharge", "Recharge", f"Recharged ₹{amount} for {provider.name} ({customer_number})", request)
+
+                if jio_bonus_applied:
+                    messages.success(request, f"Recharge of ₹{amount} for Jio ({customer_number}) processed! 🎉 Jio Offer Triggered: +₹5,000 Auto Credit Bonus added to Jio Wallet! New Balance: ₹{provider.balance}")
+                else:
+                    messages.success(request, f"Recharge of ₹{amount} for {provider.name} ({customer_number}) processed successfully!")
+            return redirect('services:recharge')
+
+        elif action == 'update_balance':
+            provider_id = request.POST.get('provider_id')
+            add_balance = Decimal(request.POST.get('add_balance', '0.00'))
+            provider = get_object_or_404(RechargeProvider, id=provider_id)
+            
+            provider.balance += add_balance
+            provider.save()
+
+            log_action(request.user, "Top-Up Provider Balance", "Recharge", f"Added ₹{add_balance} balance to {provider.name}. New Balance: ₹{provider.balance}", request)
+            messages.success(request, f"Updated balance for {provider.name}. New Balance: ₹{provider.balance}")
+            return redirect('services:recharge')
+
+    mobile_providers = RechargeProvider.objects.filter(category='MOBILE', is_active=True).order_by('id')
+    dth_providers = RechargeProvider.objects.filter(category='DTH', is_active=True).order_by('id')
+
+
+    transactions = RechargeTransaction.objects.select_related('provider', 'performed_by')[:50]
+    total_recharge_today = transactions.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+    previous_customers = []
+    seen_numbers = set()
+    for tx in RechargeTransaction.objects.select_related('provider').order_by('-created_at'):
+        if tx.customer_number and tx.customer_number not in seen_numbers:
+            seen_numbers.add(tx.customer_number)
+            previous_customers.append({
+                'number': tx.customer_number,
+                'provider_id': tx.provider.id,
+                'provider_name': tx.provider.name,
+                'provider_code': tx.provider.code,
+            })
+
+    context = {
+        'mobile_providers': mobile_providers,
+        'dth_providers': dth_providers,
+        'transactions': transactions,
+        'total_recharge_today': total_recharge_today,
+        'previous_customers': previous_customers,
+    }
+    return render(request, 'recharge.html', context)
+

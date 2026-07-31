@@ -249,4 +249,33 @@ for emi in emis_list:
         defaults=emi
     )
 
+# Seed StockSpending entries for initial product stock
+from apps.inventory.models import StockSpending
+for p in Product.objects.filter(stock_quantity__gt=0):
+    if not StockSpending.objects.filter(product=p).exists():
+        StockSpending.objects.create(
+            product=p,
+            quantity=p.stock_quantity,
+            unit_cost=p.cost_price,
+            total_amount=Decimal(p.stock_quantity) * p.cost_price,
+            note="Initial Inventory Stock Purchase"
+        )
+
+# Seed Recharge Operators
+from apps.services.models import RechargeProvider
+default_recharges = [
+    {"name": "Airtel", "code": "AIRTEL", "category": "MOBILE", "balance": Decimal("2000.00"), "logo_color": "#EF4444", "icon_class": "fa-tower-cell"},
+    {"name": "Jio", "code": "JIO", "category": "MOBILE", "balance": Decimal("3000.00"), "logo_color": "#1D4ED8", "icon_class": "fa-bolt"},
+    {"name": "BSNL", "code": "BSNL", "category": "MOBILE", "balance": Decimal("1500.00"), "logo_color": "#059669", "icon_class": "fa-signal"},
+    {"name": "VI", "code": "VI", "category": "MOBILE", "balance": Decimal("1200.00"), "logo_color": "#D97706", "icon_class": "fa-phone"},
+    {"name": "Tatasky", "code": "TATASKY", "category": "DTH", "balance": Decimal("2500.00"), "logo_color": "#7C3AED", "icon_class": "fa-tv"},
+    {"name": "ALL Other", "code": "DTH_OTHER", "category": "DTH", "balance": Decimal("1800.00"), "logo_color": "#475569", "icon_class": "fa-satellite-dish"},
+]
+for r in default_recharges:
+    RechargeProvider.objects.get_or_create(
+        code=r["code"],
+        defaults=r
+    )
+
 print("Demo data seeded successfully for Shambhu Gift House!")
+

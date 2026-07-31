@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Deep Dark Emerald Radial Background -->
+    <radialGradient id="fullBg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#0E382A"/>
+      <stop offset="60%" stop-color="#09241B"/>
+      <stop offset="100%" stop-color="#04140F"/>
+    </radialGradient>
+
+    <!-- Metallic Gold Gradient -->
+    <linearGradient id="fullGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7DF94"/>
+      <stop offset="25%" stop-color="#E5C158"/>
+      <stop offset="65%" stop-color="#C2922E"/>
+      <stop offset="100%" stop-color="#EABF52"/>
+    </linearGradient>
+
+    <!-- Pure White / Silver Gradient for "S" -->
+    <linearGradient id="fullSilver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="50%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+
+    <!-- 3D Shadow Drop Filter -->
+    <filter id="fullShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="800" fill="url(#fullBg)"/>
+
+  <!-- Logo Group -->
+  <g filter="url(#fullShadow)">
+
+    <!-- ==================== EMBLEM ICON (Y: 60 to 390) ==================== -->
+    <g transform="translate(400, 220) scale(0.72)">
+      <!-- RIBBON BOW -->
+      <!-- Left Bow Loop -->
+      <path d="M 0 -70 C -55 -225, -205 -210, -155 -115 C -125 -60, 0 -70, 0 -70 Z" 
+            fill="none" stroke="url(#fullGold)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Right Bow Loop -->
+      <path d="M 0 -70 C 55 -225, 205 -210, 155 -115 C 125 -60, 0 -70, 0 -70 Z" 
+            fill="none" stroke="url(#fullGold)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Ribbon Left Flowing Tail -->
+      <path d="M -20 -70 C -85 -75, -205 -30, -295 10 C -255 -10, -165 -55, -55 -72 Z" 
+            fill="url(#fullGold)"/>
+
+      <!-- Center Bow Knot -->
+      <ellipse cx="0" cy="-72" rx="14" ry="16" fill="url(#fullGold)"/>
+
+      <!-- GIFT BOX FRAME -->
+      <!-- Left side swooping down -->
+      <path d="M -195 0 C -205 60, -215 220, -185 275 C -170 295, 15 295, 25 295" 
+            fill="none" stroke="url(#fullGold)" stroke-width="13" stroke-linecap="round"/>
+
+      <!-- Top Right Box Extension Bar -->
+      <path d="M 10 -60 L 250 -60 L 250 40 H 135" 
+            fill="none" stroke="url(#fullGold)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Right Box Line & "G" Bottom Loop -->
+      <path d="M 235 40 V 275 C 235 300, 205 310, 75 300 C -75 280, -95 220, -85 175" 
+            fill="none" stroke="url(#fullGold)" stroke-width="13" stroke-linecap="round"/>
+
+      <!-- Inner "G" Horizontal Bar -->
+      <path d="M 125 175 H 195 V 230" 
+            fill="none" stroke="url(#fullGold)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- INTERLOCKED "S" (SILVER) MONOGRAM -->
+      <text x="0" y="155" 
+            font-family="'Playfair Display', 'Cinzel', 'Georgia', serif" 
+            font-size="240" 
+            font-weight="700" 
+            fill="url(#fullSilver)" 
+            text-anchor="middle" 
+            style="letter-spacing: -6px;">S</text>
+    </g>
+
+    <!-- ==================== TYPOGRAPHY SECTION ==================== -->
+    
+    <!-- "SHAMBHU" -->
+    <text x="400" y="505" 
+          font-family="'Cinzel', 'Playfair Display', serif" 
+          font-size="76" 
+          font-weight="700" 
+          fill="url(#fullGold)" 
+          text-anchor="middle" 
+          style="letter-spacing: 16px;">SHAMBHU</text>
+
+    <!-- "— GIFT HOUSE —" Subtitle -->
+    <g transform="translate(400, 565)">
+      <line x1="-240" y1="-8" x2="-140" y2="-8" stroke="url(#fullGold)" stroke-width="3"/>
+      <text x="0" y="0" 
+            font-family="'Plus Jakarta Sans', 'Montserrat', sans-serif" 
+            font-size="28" 
+            font-weight="700" 
+            fill="url(#fullGold)" 
+            text-anchor="middle" 
+            style="letter-spacing: 12px;">GIFT HOUSE</text>
+      <line x1="140" y1="-8" x2="240" y2="-8" stroke="url(#fullGold)" stroke-width="3"/>
+    </g>
+
+    <!-- "GIFTS THAT CREATE SMILES" Tagline -->
+    <text x="400" y="630" 
+          font-family="'Plus Jakarta Sans', 'Montserrat', sans-serif" 
+          font-size="20" 
+          font-weight="600" 
+          fill="url(#fullGold)" 
+          text-anchor="middle" 
+          opacity="0.92" 
+          style="letter-spacing: 7px;">GIFTS THAT CREATE SMILES</text>
+
+    <!-- Bottom Accent Line with Center Gift Box -->
+    <g transform="translate(400, 675)">
+      <line x1="-200" y1="0" x2="-25" y2="0" stroke="url(#fullGold)" stroke-width="2" opacity="0.75"/>
+      <g transform="translate(0, 0)">
+        <rect x="-11" y="-4" width="22" height="18" rx="2" fill="url(#fullGold)"/>
+        <rect x="-13" y="-9" width="26" height="6" rx="1.5" fill="url(#fullGold)"/>
+        <rect x="-2.5" y="-9" width="5" height="23" fill="#09241B"/>
+        <path d="M -5 -12 C -8 -16, -1 -16, 0 -10 C 1 -16, 8 -16, 5 -12 Z" fill="url(#fullGold)"/>
+      </g>
+      <line x1="25" y1="0" x2="200" y2="0" stroke="url(#fullGold)" stroke-width="2" opacity="0.75"/>
+    </g>
+
+  </g>
+</svg>

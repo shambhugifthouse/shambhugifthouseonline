@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <!-- Deep Dark Emerald Radial Background -->
+    <radialGradient id="emblemBg" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#0E382A"/>
+      <stop offset="60%" stop-color="#09241B"/>
+      <stop offset="100%" stop-color="#04140F"/>
+    </radialGradient>
+
+    <!-- Metallic Gold Gradient for Gift Box & Bow -->
+    <linearGradient id="emblemGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7DF94"/>
+      <stop offset="25%" stop-color="#E5C158"/>
+      <stop offset="65%" stop-color="#C2922E"/>
+      <stop offset="100%" stop-color="#EABF52"/>
+    </linearGradient>
+
+    <!-- Pure White / Silver Gradient for "S" Monogram -->
+    <linearGradient id="emblemSilver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="50%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+
+    <!-- Drop Shadow for 3D Depth -->
+    <filter id="emblemShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="600" height="600" fill="url(#emblemBg)"/>
+
+  <!-- Icon Emblem Container Group -->
+  <g filter="url(#emblemShadow)">
+
+    <!-- ==================== RIBBON BOW ON TOP ==================== -->
+    <g transform="translate(0, 0)">
+      <!-- Left Bow Loop -->
+      <path d="M 315 190 C 260 35, 110 50, 160 145 C 190 200, 315 190, 315 190 Z" 
+            fill="none" stroke="url(#emblemGold)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Right Bow Loop -->
+      <path d="M 315 190 C 370 35, 520 50, 470 145 C 440 200, 315 190, 315 190 Z" 
+            fill="none" stroke="url(#emblemGold)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Ribbon Flowing Left Ribbon Tail -->
+      <path d="M 295 190 C 230 185, 110 230, 20 270 C 60 250, 150 205, 260 188 Z" 
+            fill="url(#emblemGold)"/>
+
+      <!-- Center Bow Knot -->
+      <ellipse cx="315" cy="188" rx="14" ry="16" fill="url(#emblemGold)"/>
+    </g>
+
+    <!-- ==================== GIFT BOX FRAME ==================== -->
+    <g transform="translate(0, 0)">
+      <!-- Main Outer Box Line Art -->
+      <!-- Left side swooping from under ribbon tail down to bottom-left corner -->
+      <path d="M 120 260 C 110 320, 100 480, 130 535 C 145 555, 330 555, 340 555" 
+            fill="none" stroke="url(#emblemGold)" stroke-width="13" stroke-linecap="round"/>
+
+      <!-- Top Horizontal Box Line -->
+      <path d="M 325 200 L 565 200 L 565 300 H 450" 
+            fill="none" stroke="url(#emblemGold)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Right Box Line & Stylized "G" Loop -->
+      <path d="M 550 300 V 535 C 550 560, 520 570, 390 560 C 240 540, 220 480, 230 435" 
+            fill="none" stroke="url(#emblemGold)" stroke-width="13" stroke-linecap="round"/>
+
+      <!-- Inner "G" Horizontal Crossbar -->
+      <path d="M 440 435 H 510 V 490" 
+            fill="none" stroke="url(#emblemGold)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- ==================== INTERLOCKED "S" (SILVER) MONOGRAM ==================== -->
+    <g transform="translate(315, 375)">
+      <!-- Large White/Silver Serif "S" -->
+      <text x="0" y="45" 
+            font-family="'Playfair Display', 'Cinzel', 'Georgia', serif" 
+            font-size="240" 
+            font-weight="700" 
+            fill="url(#emblemSilver)" 
+            text-anchor="middle" 
+            style="letter-spacing: -6px;">S</text>
+    </g>
+
+  </g>
+</svg>

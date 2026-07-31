@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from decimal import Decimal
 
 class ServiceItem(models.Model):
@@ -54,4 +55,50 @@ class PrinterConsumable(models.Model):
     @property
     def is_low_stock(self):
         return self.stock_quantity <= self.min_stock_alert
+
+
+class RechargeProvider(models.Model):
+    CATEGORY_CHOICES = (
+        ('MOBILE', 'Mobile Operator'),
+        ('DTH', 'DTH Operator'),
+    )
+
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=50, unique=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='MOBILE')
+    logo_color = models.CharField(max_length=30, default='#E11D48')
+    icon_class = models.CharField(max_length=50, default='fa-mobile-screen-button')
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['category', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.get_category_display()}) - Balance: ₹{self.balance}"
+
+
+class RechargeTransaction(models.Model):
+    STATUS_CHOICES = (
+        ('SUCCESS', 'Success'),
+        ('PENDING', 'Pending'),
+        ('FAILED', 'Failed'),
+    )
+
+    provider = models.ForeignKey(RechargeProvider, on_delete=models.CASCADE, related_name='transactions')
+    customer_number = models.CharField(max_length=30, help_text="Mobile Number or DTH VC / Subscriber ID")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    commission = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SUCCESS')
+    reference_id = models.CharField(max_length=100, blank=True, null=True)
+    performed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"₹{self.amount} - {self.provider.name} ({self.customer_number})"
+
 

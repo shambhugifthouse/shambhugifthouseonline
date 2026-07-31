@@ -1,81 +1,176 @@
-/* Shambhu Gift House POS - Custom Design System */
+/* ==========================================
+   SHAMBHU GIFT HOUSE — GIFT BOUTIQUE SYSTEM 2026
+   ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
 :root {
+    --brand-emerald-dark: #09241B;
+    --brand-emerald-mid: #0E382A;
+    --brand-gold-primary: #E5B84B;
+    --brand-gold-gradient: linear-gradient(135deg, #F5DA8A 0%, #E5B84B 40%, #C2922E 100%);
+    --gift-rose: #E11D48;
+    --gift-pink: #F43F5E;
+    --gift-purple: #8B5CF6;
+    --gift-indigo: #4F46E5;
+    --gift-amber: #F59E0B;
+    --gift-dark: #1E1B4B;
+    --gift-body: #334155;
+    --gift-bg: #FFF8F9;
+    --gift-gradient: linear-gradient(135deg, #E11D48 0%, #8B5CF6 50%, #4F46E5 100%);
     --primary: #4F46E5;
-    --primary-hover: #4338CA;
-    --secondary: #0EA5E9;
-    --success: #10B981;
-    --warning: #F59E0B;
-    --danger: #EF4444;
-    --dark: #0F172A;
+    --dark: #0B0F19;
     --light-bg: #F8FAFC;
     --card-bg: #FFFFFF;
-    --border-color: #E2E8F0;
-    --text-muted: #64748B;
 }
 
+.font-brand-serif {
+    font-family: 'Cinzel', 'Playfair Display', serif;
+}
+
+.shambhu-logo-img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    transition: transform 0.25s ease;
+}
+
+.shambhu-logo-img:hover {
+    transform: scale(1.03);
+}
+
+.shambhu-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(9, 36, 27, 0.3);
+    border: 1px solid rgba(229, 184, 75, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #09241B;
+}
+
+.shambhu-icon-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
 body {
-    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--light-bg);
-    color: var(--dark);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--gift-bg);
+    color: var(--gift-body);
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Outfit', sans-serif;
+    color: var(--gift-dark);
 }
 
 .sidebar {
-    width: 260px;
-    background: var(--dark);
+    width: 275px;
+    background: #0B0F19 !important;
     min-height: 100vh;
     color: white;
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.12);
 }
 
 .sidebar .nav-link {
-    color: #94A3B8;
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+    color: #94A3B8 !important;
+    padding: 0.82rem 1.25rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    transition: all 0.2s ease;
+    gap: 0.85rem;
+    transition: all 0.25s ease;
+    text-decoration: none;
 }
 
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
+.sidebar .nav-link:hover {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .sidebar .nav-link.active {
-    background: var(--primary);
+    color: white !important;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35) !important;
 }
 
 .stat-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #FFFFFF;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 20px;
+    padding: 1.6rem;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
 }
 
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+/* React Component Styles */
+.pos-product-card {
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
 }
 
-.badge-soft-success {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10B981;
-    font-weight: 700;
+.pos-product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(9, 36, 27, 0.12) !important;
+    border-color: #E5B84B !important;
 }
 
-.badge-soft-danger {
-    background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
-    font-weight: 700;
+.shop-product-card {
+    transition: all 0.25s ease;
+    border: 1px solid rgba(226, 232, 240, 0.7) !important;
 }
 
-.badge-soft-warning {
-    background: rgba(245, 158, 11, 0.1);
-    color: #F59E0B;
-    font-weight: 700;
+.shop-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 32px rgba(225, 29, 72, 0.12) !important;
 }
+
+.toast-notification {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1090;
+    min-width: 280px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.toast-success { background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
+.toast-warning { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
+.toast-info { background: linear-gradient(135deg, #09241B 0%, #0E382A 100%); border: 1px solid #E5B84B; color: #E5B84B !important; }
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #F1F5F9;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+

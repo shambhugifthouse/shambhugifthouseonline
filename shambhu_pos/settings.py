@@ -126,6 +126,14 @@ WHITENOISE_MAX_AGE = 31536000  # 1 year browser caching for instant load times
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# In-Memory Caching for 5ms Response Times
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'shambhu-pos-ram-cache',
+    }
+}
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

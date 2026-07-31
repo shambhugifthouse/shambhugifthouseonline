@@ -10,34 +10,42 @@ from apps.services.models import ServiceItem
 from apps.inventory.models import StockSpending
 from apps.authentication.models import log_action
 
-def public_store_view(request):
-    categories = Category.objects.all()
-    products = Product.objects.filter(is_active=True).select_related('category')
-    try:
-        services = ServiceItem.objects.filter(is_active=True)
-    except Exception:
-        services = []
+from django.core.cache import cache
 
+def public_store_view(request):
     search_query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '')
 
-    if search_query:
-        products = products.filter(
-            Q(name__icontains=search_query) | 
-            Q(sku__icontains=search_query) | 
-            Q(barcode__icontains=search_query)
-        )
+    cache_key = f"store_home_{search_query}_{category_id}"
+    context = cache.get(cache_key)
 
-    if category_id:
-        products = products.filter(category_id=category_id)
+    if not context:
+        categories = list(Category.objects.all())
+        products = Product.objects.filter(is_active=True).select_related('category')
+        try:
+            services = list(ServiceItem.objects.filter(is_active=True))
+        except Exception:
+            services = []
 
-    context = {
-        'products': products,
-        'categories': categories,
-        'services': services,
-        'search_query': search_query,
-        'category_id': category_id,
-    }
+        if search_query:
+            products = products.filter(
+                Q(name__icontains=search_query) | 
+                Q(sku__icontains=search_query) | 
+                Q(barcode__icontains=search_query)
+            )
+
+        if category_id:
+            products = products.filter(category_id=category_id)
+
+        context = {
+            'products': list(products),
+            'categories': categories,
+            'services': services,
+            'search_query': search_query,
+            'category_id': category_id,
+        }
+        cache.set(cache_key, context, 60)  # 60s RAM cache
+
     return render(request, 'shop_home.html', context)
 
 

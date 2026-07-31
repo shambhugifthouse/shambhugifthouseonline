@@ -7,6 +7,24 @@
     <title>SHAMBHU GIFT HOUSE — Premium Gifts, Soft Toys & Stationery Store</title>
     <meta name="description" content="Welcome to Shambhu Gift House! Shop cute soft toys, customized photo frames, Parker pens, stationery & birthday gifts with instant WhatsApp ordering and fast store pickup.">
 
+    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpg' %}">
+    <!-- OpenGraph Meta Tags for WhatsApp & Social Sharing -->
+    <meta property="og:title" content="SHAMBHU GIFT HOUSE — Premium Gifts, Soft Toys & Personal Services">
+    <meta property="og:description" content="Shop premium gifts, customized photo frames, soft toys, stationery & personal services at Shambhu Gift House, Dhandarphal Bk, Sangamner. WhatsApp: 8975027902 / 9139090903.">
+    <meta property="og:image" content="https://shambhugifthouse.store/static/images/logo.jpg">
+    <meta property="og:image:secure_url" content="https://shambhugifthouse.store/static/images/logo.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="600">
+    <meta property="og:url" content="https://shambhugifthouse.store/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SHAMBHU GIFT HOUSE — Premium Gifts & Retail Store">
+    <meta name="twitter:description" content="Shop premium gifts, soft toys, stationery & personal services at Shambhu Gift House.">
+    <meta name="twitter:image" content="https://shambhugifthouse.store/static/images/logo.jpg">
+
     <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -379,7 +397,7 @@
         <div class="container-fluid max-w-1200 d-flex align-items-center justify-content-between flex-wrap gap-3" style="max-width: 1200px; margin: 0 auto;">
             <!-- Brand Logo -->
             <a href="{% url 'store_home' %}" class="gift-brand-logo d-flex align-items-center text-decoration-none">
-                <img src="{% static 'images/shambhu_logo_full.svg' %}" alt="SHAMBHU GIFT HOUSE Official Logo" style="height: 54px; width: auto;" class="shambhu-logo-img rounded-3 shadow-xs">
+                <img src="{% static 'images/logo.jpg' %}" alt="SHAMBHU GIFT HOUSE Official Logo" style="height: 54px; width: auto;" class="shambhu-logo-img rounded-3 shadow-xs">
             </a>
 
             <!-- Header Search Bar -->
@@ -433,7 +451,7 @@
                 <div class="col-lg-5 text-center text-lg-end d-none d-lg-block mt-4 mt-lg-0">
                     <div class="bg-white bg-opacity-10 backdrop-blur rounded-4 p-4 border border-white border-opacity-25 text-center shadow-lg">
                         <div class="p-2 mb-3 bg-dark rounded-4 shadow-sm border border-warning border-opacity-25 d-inline-block">
-                            <img src="{% static 'images/shambhu_logo_full.svg' %}" alt="SHAMBHU GIFT HOUSE Logo" style="max-height: 140px; width: auto;" class="img-fluid">
+                            <img src="{% static 'images/logo.jpg' %}" alt="SHAMBHU GIFT HOUSE Logo" style="max-height: 140px; width: auto;" class="img-fluid rounded-3">
                         </div>
                         <p class="small text-light opacity-75 mb-3">{{ shop.address|default:"Retail Counter Store • Main Market Road" }}</p>
                         <div class="badge bg-success bg-opacity-25 text-success border border-success fw-bold px-3.5 py-2 fs-6 rounded-pill">
@@ -642,7 +660,7 @@
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <img src="{% static 'images/shambhu_logo_full.svg' %}" alt="SHAMBHU GIFT HOUSE Logo" style="height: 70px; width: auto;" class="rounded-3 shadow border border-warning border-opacity-25">
+                        <img src="{% static 'images/logo.jpg' %}" alt="SHAMBHU GIFT HOUSE Logo" style="height: 70px; width: auto;" class="rounded-3 shadow border border-warning border-opacity-25">
                     </div>
                     <p class="text-secondary small" style="max-width: 440px; line-height: 1.6; color: #CBD5E1 !important;">
                         {{ shop.tagline|default:"Gifts, Soft Toys, Greeting Cards & Stationery Center" }}. High-quality soft toys, photo frames, birthday gifts, school stationery & office supplies.

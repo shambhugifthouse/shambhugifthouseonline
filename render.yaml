@@ -3,7 +3,7 @@ services:
     name: shambhugifthouseonline
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn shambhu_pos.wsgi:application"
+    startCommand: "gunicorn shambhu_pos.wsgi:application --workers 4 --threads 2 --keep-alive 5"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8

@@ -395,9 +395,13 @@
     <!-- Header Navigation Bar -->
     <header class="gift-nav-header py-3 px-4">
         <div class="container-fluid max-w-1200 d-flex align-items-center justify-content-between flex-wrap gap-3" style="max-width: 1200px; margin: 0 auto;">
-            <!-- Brand Logo -->
-            <a href="{% url 'store_home' %}" class="gift-brand-logo d-flex align-items-center text-decoration-none">
-                <img src="{% static 'images/logo.jpg' %}" alt="SHAMBHU GIFT HOUSE Official Logo" style="height: 54px; width: auto;" class="shambhu-logo-img rounded-3 shadow-xs">
+            <!-- Brand Logo & Name -->
+            <a href="{% url 'store_home' %}" class="gift-brand-logo d-flex align-items-center gap-2.5 text-decoration-none">
+                <img src="{% static 'images/logo.jpg' %}" alt="SHAMBHU GIFT HOUSE Official Logo" style="height: 52px; width: auto;" class="shambhu-logo-img rounded-3 shadow-sm border border-warning border-opacity-25">
+                <div class="d-flex flex-column ms-1">
+                    <span class="fw-black text-dark font-brand-serif lh-1" style="font-size: 1.25rem; letter-spacing: 0.5px; color: #1E1B4B !important; font-family: 'Outfit', sans-serif;">SHAMBHU</span>
+                    <span class="fw-extrabold text-danger font-monospace" style="font-size: 0.72rem; letter-spacing: 2px;">GIFT HOUSE</span>
+                </div>
             </a>
 
             <!-- Header Search Bar -->

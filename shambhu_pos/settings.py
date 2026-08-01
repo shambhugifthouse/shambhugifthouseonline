@@ -130,8 +130,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 USE_SUPABASE_STORAGE = os.environ.get('USE_SUPABASE_STORAGE', 'False').lower() in ('true', '1', 'yes')
 if USE_SUPABASE_STORAGE:
     INSTALLED_APPS.append('storages')
-    AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_S3_ACCESS_KEY')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_S3_SECRET_KEY')
+    SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
+    AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_S3_ACCESS_KEY', SERVICE_KEY)
+    AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_S3_SECRET_KEY', SERVICE_KEY)
     AWS_STORAGE_BUCKET_NAME = os.environ.get('SUPABASE_STORAGE_BUCKET', 'product-images')
     SUPABASE_PROJECT_REF = os.environ.get('SUPABASE_PROJECT_REF', 'caakvjsfxqrvlznfwfry')
     AWS_S3_ENDPOINT_URL = f"https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/s3"

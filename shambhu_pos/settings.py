@@ -126,6 +126,20 @@ WHITENOISE_MAX_AGE = 31536000  # 1 year browser caching for instant load times
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Supabase Storage S3 Bucket Integration
+USE_SUPABASE_STORAGE = os.environ.get('USE_SUPABASE_STORAGE', 'False').lower() in ('true', '1', 'yes')
+if USE_SUPABASE_STORAGE:
+    INSTALLED_APPS.append('storages')
+    AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_S3_ACCESS_KEY')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_S3_SECRET_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('SUPABASE_STORAGE_BUCKET', 'product-images')
+    SUPABASE_PROJECT_REF = os.environ.get('SUPABASE_PROJECT_REF', 'caakvjsfxqrvlznfwfry')
+    AWS_S3_ENDPOINT_URL = f"https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/s3"
+    AWS_S3_REGION_NAME = os.environ.get('SUPABASE_REGION', 'ap-southeast-1')
+    AWS_QUERYSTRING_AUTH = False
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    MEDIA_URL = f"https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}/"
+
 # In-Memory Caching for 5ms Response Times
 CACHES = {
     'default': {

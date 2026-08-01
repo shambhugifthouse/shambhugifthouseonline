@@ -211,11 +211,44 @@ def recharge_view(request):
             messages.success(request, f"Updated balance for {provider.name}. New Balance: ₹{provider.balance}")
             return redirect('services:recharge')
 
+        elif action == 'delete_recharge':
+            tx_id = request.POST.get('tx_id')
+            tx = get_object_or_404(RechargeTransaction, id=tx_id)
+            amt = tx.amount
+            prov_name = tx.provider.name
+            tx.provider.balance += amt
+            tx.provider.save()
+            tx.delete()
+
+            log_action(request.user, "Delete Recharge Entry", "Recharge", f"Deleted recharge transaction & restored ₹{amt} to {prov_name}", request)
+            messages.warning(request, f"Recharge log deleted! ₹{amt} restored to {prov_name} balance.")
+            return redirect('services:recharge')
+
     mobile_providers = RechargeProvider.objects.filter(category='MOBILE', is_active=True).order_by('id')
     dth_providers = RechargeProvider.objects.filter(category='DTH', is_active=True).order_by('id')
 
-    transactions = RechargeTransaction.objects.select_related('provider', 'performed_by')[:50]
-    total_recharge_today = transactions.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    # Filtering & Searching for Recharge History
+    search_q = request.GET.get('q', '').strip()
+    provider_filter = request.GET.get('provider', '')
+    mode_filter = request.GET.get('mode', '')
+
+    tx_qs = RechargeTransaction.objects.select_related('provider', 'performed_by').order_by('-created_at')
+
+    if search_q:
+        tx_qs = tx_qs.filter(customer_number__icontains=search_q)
+
+    if provider_filter:
+        tx_qs = tx_qs.filter(provider_id=provider_filter)
+
+    if mode_filter:
+        tx_qs = tx_qs.filter(payment_mode=mode_filter)
+
+    transactions = tx_qs[:100]
+
+    total_recharge_today = tx_qs.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    total_commission_today = tx_qs.aggregate(total=Sum('commission'))['total'] or Decimal('0.00')
+    cash_recharges = tx_qs.filter(payment_mode='CASH').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    online_recharges = tx_qs.filter(payment_mode='ONLINE').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     previous_customers = []
     seen_numbers = set()
@@ -234,7 +267,13 @@ def recharge_view(request):
         'dth_providers': dth_providers,
         'transactions': transactions,
         'total_recharge_today': total_recharge_today,
+        'total_commission_today': total_commission_today,
+        'cash_recharges': cash_recharges,
+        'online_recharges': online_recharges,
         'previous_customers': previous_customers,
+        'search_q': search_q,
+        'provider_filter': provider_filter,
+        'mode_filter': mode_filter,
     }
     return render(request, 'recharge.html', context)
 

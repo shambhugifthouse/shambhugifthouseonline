@@ -219,7 +219,7 @@ def recharge_view(request):
 
     previous_customers = []
     seen_numbers = set()
-    for tx in RechargeTransaction.objects.select_related('provider').order_by('-created_at'):
+    for tx in RechargeTransaction.objects.select_related('provider').order_by('-created_at')[:100]:
         if tx.customer_number and tx.customer_number not in seen_numbers:
             seen_numbers.add(tx.customer_number)
             previous_customers.append({

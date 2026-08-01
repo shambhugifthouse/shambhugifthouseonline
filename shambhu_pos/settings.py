@@ -89,6 +89,12 @@ DATABASES = {
         'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
         'PORT': '6543',
         'CONN_MAX_AGE': 600,  # Persistent DB Connection Pool (10 mins) for 10x speedup
+        'CONN_HEALTH_CHECKS': True,
+        'OPTIONS': {
+            'sslmode': 'require',
+            'connect_timeout': 5,
+        },
+        'DISABLE_SERVER_SIDE_CURSORS': True,
     }
 }
 

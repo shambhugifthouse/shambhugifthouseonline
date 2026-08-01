@@ -378,7 +378,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="POST" action="{% url 'services:recharge' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+            <form method="POST" action="{% url 'services:recharge' %}" onsubmit="return handleSafeFormSubmit(this);">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="perform_recharge">
 
@@ -611,14 +611,36 @@ function calculateThreePercentCommission() {
     }
 }
 
+function handleSafeFormSubmit(form) {
+    if (form && form.checkValidity && !form.checkValidity()) {
+        return true;
+    }
+    const btn = form ? form.querySelector('button[type=submit]') : null;
+    if (btn) {
+        setTimeout(() => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Processing...';
+        }, 10);
+    }
+    return true;
+}
+
 function openRechargeModal(providerId, providerName, balance) {
     const select = document.getElementById('recharge_provider_select');
     if (select) {
         select.value = providerId;
     }
     calculateThreePercentCommission();
-    const modal = new bootstrap.Modal(document.getElementById('rechargeModal'));
-    modal.show();
+    const modalElem = document.getElementById('rechargeModal');
+    if (modalElem) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            let modalInstance = bootstrap.Modal.getInstance(modalElem);
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElem);
+            }
+            modalInstance.show();
+        }
+    }
 }
 
 function openTopupModal(providerId, providerName) {
@@ -626,8 +648,16 @@ function openTopupModal(providerId, providerName) {
     if (select) {
         select.value = providerId;
     }
-    const modal = new bootstrap.Modal(document.getElementById('topupModal'));
-    modal.show();
+    const modalElem = document.getElementById('topupModal');
+    if (modalElem) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            let modalInstance = bootstrap.Modal.getInstance(modalElem);
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElem);
+            }
+            modalInstance.show();
+        }
+    }
 }
 </script>
 

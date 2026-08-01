@@ -83,7 +83,7 @@
     <div class="tab-content" id="serviceTabContent">
         <!-- FORM 1: PAYMENT BANKS CASH WITHDRAWAL / MONEY TRANSFER -->
         <div class="tab-pane fade show active" id="withdrawal-panel" role="tabpanel">
-            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="return handleSafeFormSubmit(this);">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add_other_service">
                 <input type="hidden" name="service_type" value="CASH_WITHDRAWAL">
@@ -134,7 +134,7 @@
 
         <!-- FORM 2: LIGHT / ELECTRICITY BILL PAYMENT -->
         <div class="tab-pane fade" id="lightbill-panel" role="tabpanel">
-            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="return handleSafeFormSubmit(this);">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add_other_service">
                 <input type="hidden" name="service_type" value="ELECTRICITY_BILL">
@@ -185,7 +185,7 @@
 
         <!-- FORM 3: COLLEGE & ONLINE FORMS -->
         <div class="tab-pane fade" id="forms-panel" role="tabpanel">
-            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="return handleSafeFormSubmit(this);">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add_other_service">
                 <input type="hidden" name="service_type" value="COLLEGE_FORM">
@@ -322,6 +322,20 @@
 </div>
 
 <script>
+function handleSafeFormSubmit(form) {
+    if (form && form.checkValidity && !form.checkValidity()) {
+        return true;
+    }
+    const btn = form ? form.querySelector('button[type=submit]') : null;
+    if (btn) {
+        setTimeout(() => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Processing...';
+        }, 10);
+    }
+    return true;
+}
+
 function calcWithdrawalFee(amt) {
     const val = parseFloat(amt || 0);
     const chargeInput = document.getElementById('withdraw_charge');

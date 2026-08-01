@@ -21,8 +21,8 @@ function RechargeTerminalApp() {
   ];
 
   const dthOperators = [
-    { id: 'tataplay', name: 'Tata Play (Sky)', color: '#6A1B9A', badge: 'TATA' },
-    { id: 'airteldth', name: 'Airtel Digital TV', color: '#E40000', badge: 'AIRTEL DTH' },
+    { id: 'tatasky', name: 'Tata Play (Sky)', color: '#6A1B9A', badge: 'TATA' },
+    { id: 'dth_other', name: 'Airtel / Other DTH', color: '#E40000', badge: 'DTH OTHER' },
     { id: 'sundirect', name: 'Sun Direct', color: '#E65100', badge: 'SUN' },
     { id: 'dishtv', name: 'Dish TV', color: '#C2185B', badge: 'DISH' },
   ];
@@ -65,14 +65,61 @@ function RechargeTerminalApp() {
     setIsSubmitting(true);
     setIsConfirming(false);
 
-    showToast(`Recharge of ₹${amount} (${paymentMode}) for ${number} completed successfully!`, 'success');
-    
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setNumber('');
-      setAmount('');
-      setSelectedPlan(null);
-    }, 1500);
+    // Find matched provider ID from DOM select element
+    const providerSelect = document.getElementById('recharge_provider_select');
+    let matchedProviderId = '';
+
+    if (providerSelect) {
+      const options = Array.from(providerSelect.options);
+      const targetOpCode = operator.toLowerCase();
+      const matchedOpt = options.find((opt) => opt.text.toLowerCase().includes(targetOpCode)) || options[0];
+      if (matchedOpt) matchedProviderId = matchedOpt.value;
+    }
+
+    // Submit form directly to Django backend
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = window.location.href;
+
+    const csrfTokenElem = document.querySelector('[name=csrfmiddlewaretoken]');
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfTokenElem ? csrfTokenElem.value : '';
+    form.appendChild(csrfInput);
+
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = 'perform_recharge';
+    form.appendChild(actionInput);
+
+    const providerInput = document.createElement('input');
+    providerInput.type = 'hidden';
+    providerInput.name = 'provider_id';
+    providerInput.value = matchedProviderId || '1';
+    form.appendChild(providerInput);
+
+    const numberInput = document.createElement('input');
+    numberInput.type = 'hidden';
+    numberInput.name = 'customer_number';
+    numberInput.value = number;
+    form.appendChild(numberInput);
+
+    const amountInput = document.createElement('input');
+    amountInput.type = 'hidden';
+    amountInput.name = 'amount';
+    amountInput.value = amount;
+    form.appendChild(amountInput);
+
+    const modeInput = document.createElement('input');
+    modeInput.type = 'hidden';
+    modeInput.name = 'payment_mode';
+    modeInput.value = paymentMode;
+    form.appendChild(modeInput);
+
+    document.body.appendChild(form);
+    form.submit();
   };
 
   const currentOps = serviceType === 'mobile' ? mobileOperators : dthOperators;
@@ -97,7 +144,7 @@ function RechargeTerminalApp() {
           </button>
           <button
             className={`btn rounded-pill fw-bold border-0 py-2.5 ${serviceType === 'dth' ? 'btn-dark text-warning shadow-sm' : 'btn-light text-muted'}`}
-            onClick={() => { setServiceType('dth'); setOperator('tataplay'); }}
+            onClick={() => { setServiceType('dth'); setOperator('tatasky'); }}
           >
             <i className="fa-solid fa-tv me-2"></i> DTH Satellite TV
           </button>
@@ -176,7 +223,7 @@ function RechargeTerminalApp() {
             <div className="mb-4">
               <label className="form-label fw-bold small text-secondary">Recharge Amount (₹)</label>
               <div className="input-group input-group-lg">
-                <span className="input-group-text bg-light text-muted border-end-0">₹</span>
+                <span className="input-group-text bg-light border-0 fw-bold">₹</span>
                 <input
                   type="number"
                   className="form-control border-start-0 fs-5 fw-extrabold text-success"
@@ -201,7 +248,7 @@ function RechargeTerminalApp() {
               <button
                 className="btn btn-dark py-3 px-3 fw-bold rounded-3 shadow-sm fs-6"
                 data-bs-toggle="modal"
-                data-bs-target="#quickRechargeModal"
+                data-bs-target="#rechargeModal"
                 type="button"
                 title="Quick Operator Entry"
               >

@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Other Services — {{ shop.shop_name|default:"Shambhu Gift House" }}{% endblock %}
+
+{% block page_title %}Other Retail Services & Payment Counter{% endblock %}
+{% block page_subtitle %}College & Online Forms, Light Bill Payments & Payment Banks Cash Withdrawal with Editable Service Commission{% endblock %}
+
+{% block content %}
+<!-- SUMMARY METRICS BAR -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card p-3.5 d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-muted fw-bold text-uppercase" style="font-size: 0.72rem;">Total Service Profit Today</small>
+                <h3 class="fw-extrabold text-success mb-0">₹{{ total_charges_collected|floatformat:2 }}</h3>
+            </div>
+            <div class="bg-success bg-opacity-10 text-success p-3 rounded-4 fs-4">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card p-3.5 d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-muted fw-bold text-uppercase" style="font-size: 0.72rem;">College & Online Forms</small>
+                <h3 class="fw-extrabold text-primary mb-0">{{ forms_count }}</h3>
+            </div>
+            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4 fs-4">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card p-3.5 d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-muted fw-bold text-uppercase" style="font-size: 0.72rem;">Light Bill Payments</small>
+                <h3 class="fw-extrabold text-warning mb-0">{{ light_bills_count }}</h3>
+            </div>
+            <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4 fs-4">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card p-3.5 d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-muted fw-bold text-uppercase" style="font-size: 0.72rem;">Bank Cash Withdrawals</small>
+                <h3 class="fw-extrabold text-info mb-0">{{ withdrawals_count }}</h3>
+            </div>
+            <div class="bg-info bg-opacity-10 text-info p-3 rounded-4 fs-4">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SERVICE TRANSACTION ENTRY FORMS CARD -->
+<div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+    <h5 class="fw-bold font-heading text-dark mb-3">
+        <i class="fa-solid fa-square-plus me-2 text-primary"></i> New Service Transaction Entry
+    </h5>
+
+    <!-- Service Type Tabs -->
+    <ul class="nav nav-pills gap-2 mb-4 p-1.5 bg-light rounded-pill" id="serviceTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill fw-bold px-4" id="withdrawal-tab" data-bs-toggle="pill" data-bs-target="#withdrawal-panel" type="button" role="tab">
+                <i class="fa-solid fa-hand-holding-dollar me-1.5 text-success"></i> Payment Bank Cash Withdrawal / AEPS
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-bold px-4" id="lightbill-tab" data-bs-toggle="pill" data-bs-target="#lightbill-panel" type="button" role="tab">
+                <i class="fa-solid fa-lightbulb me-1.5 text-warning"></i> Light / Electricity Bill
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-bold px-4" id="forms-tab" data-bs-toggle="pill" data-bs-target="#forms-panel" type="button" role="tab">
+                <i class="fa-solid fa-file-signature me-1.5 text-primary"></i> College & Online Forms
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="serviceTabContent">
+        <!-- FORM 1: PAYMENT BANKS CASH WITHDRAWAL / MONEY TRANSFER -->
+        <div class="tab-pane fade show active" id="withdrawal-panel" role="tabpanel">
+            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_other_service">
+                <input type="hidden" name="service_type" value="CASH_WITHDRAWAL">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Customer Name / Mobile Number</label>
+                        <input type="text" name="customer_info" class="form-control bg-light border-0 py-2.5 fw-bold" placeholder="e.g. Rahul Shinde (9876543210)" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Service Description</label>
+                        <input type="text" name="title_or_biller" class="form-control bg-light border-0 py-2.5 fw-bold" value="Aadhaar Cash Withdrawal / AEPS" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Payment Received Mode</label>
+                        <select name="payment_mode" class="form-select bg-light border-0 py-2.5 fw-bold">
+                            <option value="CASH" selected>💵 Cash Payment</option>
+                            <option value="ONLINE">📱 Online / UPI</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Withdrawal Amount (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold">₹</span>
+                            <input type="number" step="0.01" name="transaction_amount" id="withdraw_amount" oninput="calcWithdrawalFee(this.value)" class="form-control bg-light border-0 py-2.5 fw-extrabold text-primary fs-5" placeholder="e.g. 2000" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Accepted Commission / Fee (₹) <span class="text-success">(Editable)</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold text-success">+₹</span>
+                            <input type="number" step="0.01" name="service_charge" id="withdraw_charge" class="form-control bg-light border-0 py-2.5 fw-extrabold text-success fs-5" placeholder="e.g. 20" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success w-100 py-2.5 fw-bold rounded-3 shadow-sm">
+                            <i class="fa-solid fa-circle-check me-1"></i> Record Cash Withdrawal
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- FORM 2: LIGHT / ELECTRICITY BILL PAYMENT -->
+        <div class="tab-pane fade" id="lightbill-panel" role="tabpanel">
+            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_other_service">
+                <input type="hidden" name="service_type" value="ELECTRICITY_BILL">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Biller Name</label>
+                        <input type="text" name="title_or_biller" class="form-control bg-light border-0 py-2.5 fw-bold" value="MSEB Light Bill Payment" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Consumer No / Customer Phone</label>
+                        <input type="text" name="customer_info" class="form-control bg-light border-0 py-2.5 fw-bold" placeholder="e.g. 180012345678" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Payment Received Mode</label>
+                        <select name="payment_mode" class="form-select bg-light border-0 py-2.5 fw-bold">
+                            <option value="CASH" selected>💵 Cash Payment</option>
+                            <option value="ONLINE">📱 Online / UPI</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Light Bill Amount (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold">₹</span>
+                            <input type="number" step="0.01" name="transaction_amount" class="form-control bg-light border-0 py-2.5 fw-bold text-dark fs-5" placeholder="e.g. 1450" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Service Charge Collected (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold text-success">+₹</span>
+                            <input type="number" step="0.01" name="service_charge" class="form-control bg-light border-0 py-2.5 fw-extrabold text-success fs-5" value="20.00" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-warning w-100 py-2.5 fw-bold rounded-3 shadow-sm" style="color: #09241B;">
+                            <i class="fa-solid fa-bolt me-1"></i> Record Light Bill Payment
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- FORM 3: COLLEGE & ONLINE FORMS -->
+        <div class="tab-pane fade" id="forms-panel" role="tabpanel">
+            <form method="POST" action="{% url 'services:other_services' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_other_service">
+                <input type="hidden" name="service_type" value="COLLEGE_FORM">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Form Name / Title</label>
+                        <input type="text" name="title_or_biller" class="form-control bg-light border-0 py-2.5 fw-bold" placeholder="e.g. Engineering Admission Form / MahaDBT Scholarship" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Student / Customer Name</label>
+                        <input type="text" name="customer_info" class="form-control bg-light border-0 py-2.5 fw-bold" placeholder="e.g. Amit Patil (9822110099)" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Payment Received Mode</label>
+                        <select name="payment_mode" class="form-select bg-light border-0 py-2.5 fw-bold">
+                            <option value="CASH" selected>💵 Cash Payment</option>
+                            <option value="ONLINE">📱 Online / UPI</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Government / College Exam Fee (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold">₹</span>
+                            <input type="number" step="0.01" name="transaction_amount" class="form-control bg-light border-0 py-2.5 fw-bold text-dark fs-5" placeholder="e.g. 500" value="0.00">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Accepted Form Filing Charge (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold text-success">+₹</span>
+                            <input type="number" step="0.01" name="service_charge" class="form-control bg-light border-0 py-2.5 fw-extrabold text-success fs-5" value="100.00" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold rounded-3 shadow-sm">
+                            <i class="fa-solid fa-graduation-cap me-1"></i> Record Form Submission
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- TRANSACTION LOG TABLE -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-0 py-3.5 px-4 d-flex align-items-center justify-content-between">
+        <h5 class="fw-bold mb-0 font-heading"><i class="fa-solid fa-history me-2 text-primary"></i> Other Services Log</h5>
+        <span class="badge bg-primary bg-opacity-15 text-primary px-3 py-1.5 rounded-pill fw-bold">Recent 100 Entries</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light text-muted small text-uppercase font-heading">
+                <tr>
+                    <th class="ps-4">Date & Time</th>
+                    <th>Service Type</th>
+                    <th>Title / Details</th>
+                    <th>Customer / Consumer</th>
+                    <th class="text-center">Mode</th>
+                    <th class="text-end">Trans Amount (₹)</th>
+                    <th class="text-end">Profit / Charge (₹)</th>
+                    <th class="pe-4 text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in transactions %}
+                <tr>
+                    <td class="ps-4 small text-secondary font-monospace">
+                        <i class="fa-regular fa-clock me-1 text-muted"></i> {{ tx.created_at|date:"d M Y, h:i A" }}
+                    </td>
+                    <td>
+                        {% if tx.service_type == 'CASH_WITHDRAWAL' %}
+                            <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 px-3 py-1.5 rounded-pill fw-bold">
+                                🏦 Cash Withdrawal
+                            </span>
+                        {% elif tx.service_type == 'ELECTRICITY_BILL' %}
+                            <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25 px-3 py-1.5 rounded-pill fw-bold">
+                                ⚡ Light Bill
+                            </span>
+                        {% else %}
+                            <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-3 py-1.5 rounded-pill fw-bold">
+                                🎓 College Form
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold text-dark">
+                        {{ tx.title_or_biller }}
+                    </td>
+                    <td class="fw-bold font-monospace text-secondary">
+                        {{ tx.customer_info }}
+                    </td>
+                    <td class="text-center">
+                        {% if tx.payment_mode == 'ONLINE' %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary border rounded-pill px-2.5 py-1">📱 Online</span>
+                        {% else %}
+                            <span class="badge bg-success bg-opacity-10 text-success border rounded-pill px-2.5 py-1">💵 Cash</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end font-monospace fw-bold text-dark fs-6">
+                        ₹{{ tx.transaction_amount|floatformat:2 }}
+                    </td>
+                    <td class="text-end font-monospace fw-extrabold text-success fs-6">
+                        +₹{{ tx.service_charge|floatformat:2 }}
+                    </td>
+                    <td class="pe-4 text-end">
+                        <form method="POST" action="{% url 'services:other_services' %}" class="d-inline" onsubmit="return confirm('Delete this service record?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_other_service">
+                            <input type="hidden" name="tx_id" value="{{ tx.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-folder-open fs-1 d-block mb-2 opacity-50"></i>
+                        No service transactions recorded yet. Use the form above to log College Forms, Light Bills, or Cash Withdrawals.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function calcWithdrawalFee(amt) {
+    const val = parseFloat(amt || 0);
+    const chargeInput = document.getElementById('withdraw_charge');
+    if (val > 0) {
+        // Auto-calculate 1% or ₹20 minimum commission fee
+        let fee = Math.max(20, Math.round(val * 0.01));
+        chargeInput.value = fee.toFixed(2);
+    }
+}
+</script>
+{% endblock %}

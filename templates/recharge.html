@@ -378,11 +378,27 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="POST" action="{% url 'services:recharge' %}">
+            <form method="POST" action="{% url 'services:recharge' %}" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="perform_recharge">
 
                 <div class="modal-body p-4">
+                    <!-- Payment Mode Selection (Cash vs Online) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Payment Received Mode</label>
+                        <div class="d-flex gap-2">
+                            <input type="radio" class="btn-check" name="payment_mode" id="pm_cash" value="CASH" checked>
+                            <label class="btn btn-outline-success flex-grow-1 fw-bold py-2 rounded-3" for="pm_cash">
+                                💵 Cash Payment
+                            </label>
+
+                            <input type="radio" class="btn-check" name="payment_mode" id="pm_online" value="ONLINE">
+                            <label class="btn btn-outline-primary flex-grow-1 fw-bold py-2 rounded-3" for="pm_online">
+                                📱 Online / UPI
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Operator Select -->
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted text-uppercase">Select Operator</label>

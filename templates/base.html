@@ -149,6 +149,9 @@
                     <a href="{% url 'services:recharge' %}" class="nav-link {% if request.resolver_match.namespace == 'services' and request.resolver_match.url_name == 'recharge' %}active{% endif %}">
                         <i class="fa-solid fa-mobile-screen-button w-20 text-warning"></i> Recharge (Mobile/DTH)
                     </a>
+                    <a href="{% url 'services:other_services' %}" class="nav-link {% if request.resolver_match.namespace == 'services' and request.resolver_match.url_name == 'other_services' %}active{% endif %}">
+                        <i class="fa-solid fa-hand-holding-dollar w-20 text-info"></i> Other Services (Forms/Bills)
+                    </a>
                     <a href="{% url 'services:list' %}" class="nav-link {% if request.resolver_match.namespace == 'services' and request.resolver_match.url_name == 'list' %}active{% endif %}">
                         <i class="fa-solid fa-print w-20"></i> Xerox
                     </a>

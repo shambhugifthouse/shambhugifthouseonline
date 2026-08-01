@@ -141,14 +141,28 @@ def recharge_view(request):
 
     if request.method == 'POST':
         action = request.POST.get('action')
-
         if action == 'perform_recharge':
             provider_id = request.POST.get('provider_id')
             customer_number = request.POST.get('customer_number', '').strip()
             amount = Decimal(request.POST.get('amount', '0.00'))
             commission = Decimal(request.POST.get('commission', '0.00'))
+            payment_mode = request.POST.get('payment_mode', 'CASH')
 
             provider = get_object_or_404(RechargeProvider, id=provider_id)
+
+            # Prevent double entries / duplicate submissions within 5 seconds
+            from django.utils import timezone
+            import datetime
+            recent_duplicate = RechargeTransaction.objects.filter(
+                provider=provider,
+                customer_number=customer_number,
+                amount=amount,
+                created_at__gte=timezone.now() - datetime.timedelta(seconds=5)
+            ).exists()
+
+            if recent_duplicate:
+                messages.warning(request, f"Duplicate request blocked! A recharge of ₹{amount} for {customer_number} was just submitted.")
+                return redirect('services:recharge')
 
             # Auto-calculate 3% commission for mobile recharges (or if commission is 0)
             if provider.category == 'MOBILE' or commission == Decimal('0.00'):
@@ -172,16 +186,17 @@ def recharge_view(request):
                     customer_number=customer_number,
                     amount=amount,
                     commission=commission,
+                    payment_mode=payment_mode,
                     status='SUCCESS',
                     performed_by=request.user
                 )
 
-                log_action(request.user, "Perform Recharge", "Recharge", f"Recharged ₹{amount} for {provider.name} ({customer_number})", request)
+                log_action(request.user, "Perform Recharge", "Recharge", f"Recharged ₹{amount} ({payment_mode}) for {provider.name} ({customer_number})", request)
 
                 if jio_bonus_applied:
-                    messages.success(request, f"Recharge of ₹{amount} for Jio ({customer_number}) processed! 🎉 Jio Offer Triggered: +₹5,000 Auto Credit Bonus added to Jio Wallet! New Balance: ₹{provider.balance}")
+                    messages.success(request, f"Recharge of ₹{amount} ({payment_mode}) for Jio ({customer_number}) processed! 🎉 Jio Offer Triggered: +₹5,000 Auto Credit Bonus added to Jio Wallet! New Balance: ₹{provider.balance}")
                 else:
-                    messages.success(request, f"Recharge of ₹{amount} for {provider.name} ({customer_number}) processed successfully!")
+                    messages.success(request, f"Recharge of ₹{amount} ({payment_mode}) for {provider.name} ({customer_number}) processed successfully!")
             return redirect('services:recharge')
 
         elif action == 'update_balance':
@@ -198,7 +213,6 @@ def recharge_view(request):
 
     mobile_providers = RechargeProvider.objects.filter(category='MOBILE', is_active=True).order_by('id')
     dth_providers = RechargeProvider.objects.filter(category='DTH', is_active=True).order_by('id')
-
 
     transactions = RechargeTransaction.objects.select_related('provider', 'performed_by')[:50]
     total_recharge_today = transactions.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
@@ -223,4 +237,77 @@ def recharge_view(request):
         'previous_customers': previous_customers,
     }
     return render(request, 'recharge.html', context)
+
+
+@login_required
+def other_services_view(request):
+    from .models import OtherServiceTransaction
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'add_other_service':
+            service_type = request.POST.get('service_type', 'COLLEGE_FORM')
+            title_or_biller = request.POST.get('title_or_biller', '').strip()
+            customer_info = request.POST.get('customer_info', '').strip()
+            transaction_amount = Decimal(request.POST.get('transaction_amount', '0.00'))
+            service_charge = Decimal(request.POST.get('service_charge', '0.00'))
+            payment_mode = request.POST.get('payment_mode', 'CASH')
+            notes = request.POST.get('notes', '').strip() or None
+
+            # Duplicate prevention check (5-second throttle)
+            from django.utils import timezone
+            import datetime
+            recent_duplicate = OtherServiceTransaction.objects.filter(
+                service_type=service_type,
+                customer_info=customer_info,
+                transaction_amount=transaction_amount,
+                service_charge=service_charge,
+                created_at__gte=timezone.now() - datetime.timedelta(seconds=5)
+            ).exists()
+
+            if recent_duplicate:
+                messages.warning(request, "Duplicate service entry blocked! Transaction was just submitted.")
+                return redirect('services:other_services')
+
+            tx = OtherServiceTransaction.objects.create(
+                service_type=service_type,
+                title_or_biller=title_or_biller,
+                customer_info=customer_info,
+                transaction_amount=transaction_amount,
+                service_charge=service_charge,
+                payment_mode=payment_mode,
+                notes=notes,
+                performed_by=request.user
+            )
+
+            log_action(request.user, "Record Other Service", "Services", f"{tx.get_service_type_display()} for {customer_info} - Charge: ₹{service_charge}", request)
+            messages.success(request, f"Recorded {tx.get_service_type_display()} for '{customer_info}' with ₹{service_charge} commission/fee ({payment_mode}).")
+            return redirect('services:other_services')
+
+        elif action == 'delete_other_service':
+            tx_id = request.POST.get('tx_id')
+            tx = get_object_or_404(OtherServiceTransaction, id=tx_id)
+            desc = str(tx)
+            tx.delete()
+            log_action(request.user, "Delete Other Service Entry", "Services", f"Deleted service log: {desc}", request)
+            messages.warning(request, "Service transaction record deleted.")
+            return redirect('services:other_services')
+
+    transactions = OtherServiceTransaction.objects.select_related('performed_by')[:100]
+
+    # Summary metrics
+    forms_count = transactions.filter(service_type='COLLEGE_FORM').count()
+    light_bills_count = transactions.filter(service_type='ELECTRICITY_BILL').count()
+    withdrawals_count = transactions.filter(service_type='CASH_WITHDRAWAL').count()
+    total_charges_collected = transactions.aggregate(total=Sum('service_charge'))['total'] or Decimal('0.00')
+
+    context = {
+        'transactions': transactions,
+        'forms_count': forms_count,
+        'light_bills_count': light_bills_count,
+        'withdrawals_count': withdrawals_count,
+        'total_charges_collected': total_charges_collected,
+    }
+    return render(request, 'other_services.html', context)
 

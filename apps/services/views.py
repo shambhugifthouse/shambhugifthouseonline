@@ -294,13 +294,16 @@ def other_services_view(request):
             messages.warning(request, "Service transaction record deleted.")
             return redirect('services:other_services')
 
-    transactions = OtherServiceTransaction.objects.select_related('performed_by')[:100]
+    qs = OtherServiceTransaction.objects.select_related('performed_by')
 
-    # Summary metrics
-    forms_count = transactions.filter(service_type='COLLEGE_FORM').count()
-    light_bills_count = transactions.filter(service_type='ELECTRICITY_BILL').count()
-    withdrawals_count = transactions.filter(service_type='CASH_WITHDRAWAL').count()
-    total_charges_collected = transactions.aggregate(total=Sum('service_charge'))['total'] or Decimal('0.00')
+    # Summary metrics (on unsliced queryset)
+    forms_count = qs.filter(service_type='COLLEGE_FORM').count()
+    light_bills_count = qs.filter(service_type='ELECTRICITY_BILL').count()
+    withdrawals_count = qs.filter(service_type='CASH_WITHDRAWAL').count()
+    total_charges_collected = qs.aggregate(total=Sum('service_charge'))['total'] or Decimal('0.00')
+
+    # Slice for display table
+    transactions = qs[:100]
 
     context = {
         'transactions': transactions,

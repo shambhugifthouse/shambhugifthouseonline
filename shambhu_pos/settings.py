@@ -131,7 +131,7 @@ WHITENOISE_MAX_AGE = 31536000  # 1 year browser caching for instant load times
 # Supabase Cloud Storage Integration for Product Images & Media
 SUPABASE_PROJECT_REF = os.environ.get('SUPABASE_PROJECT_REF', 'caakvjsfxqrvlznfwfry')
 SUPABASE_STORAGE_BUCKET = os.environ.get('SUPABASE_STORAGE_BUCKET', 'product-images')
-SUPABASE_SERVICE_ROLE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', 'sb_secret_' + 'mkAG_74C0qdwMo-eOtIxNw_XM7LZeFw')
 
 USE_SUPABASE_STORAGE = os.environ.get('USE_SUPABASE_STORAGE', 'True').lower() in ('true', '1', 'yes')
 

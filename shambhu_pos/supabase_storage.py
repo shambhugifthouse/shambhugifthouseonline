@@ -1,4 +1,5 @@
 import os
+import mimetypes
 import urllib.request
 import urllib.parse
 from django.core.files.storage import Storage
@@ -15,21 +16,38 @@ class SupabaseStorage(Storage):
         self.upload_url = f"https://{self.project_ref}.supabase.co/storage/v1/object/{self.bucket_name}/"
 
     def _save(self, name, content):
-        clean_name = name.replace('\\', '/').lstrip('/')
-        target_url = f"{self.upload_url}{urllib.parse.quote(clean_name)}"
+        clean_name = str(name).replace('\\', '/').lstrip('/')
+        safe_quoted_path = urllib.parse.quote(clean_name, safe='/')
+        target_url = f"{self.upload_url}{safe_quoted_path}"
         
+        # Guess MIME content type for proper image rendering in browser
+        content_type, _ = mimetypes.guess_type(clean_name)
+        if not content_type:
+            ext = clean_name.lower()
+            if ext.endswith(('.jpg', '.jpeg')):
+                content_type = 'image/jpeg'
+            elif ext.endswith('.png'):
+                content_type = 'image/png'
+            elif ext.endswith('.webp'):
+                content_type = 'image/webp'
+            else:
+                content_type = 'application/octet-stream'
+
         # Read content bytes
         content.seek(0)
         file_bytes = content.read()
         
+        headers = {
+            'Authorization': f'Bearer {self.secret_key}',
+            'apiKey': self.secret_key,
+            'Content-Type': content_type,
+            'x-upsert': 'true',
+        }
+        
         req = urllib.request.Request(
             target_url,
             data=file_bytes,
-            headers={
-                'Authorization': f'Bearer {self.secret_key}',
-                'apiKey': self.secret_key,
-                'x-upsert': 'true',
-            },
+            headers=headers,
             method='POST'
         )
         
@@ -51,5 +69,10 @@ class SupabaseStorage(Storage):
         return False
 
     def url(self, name):
-        clean_name = name.replace('\\', '/').lstrip('/')
-        return f"{self.base_url}{urllib.parse.quote(clean_name)}"
+        if not name:
+            return ''
+        clean_name = str(name).replace('\\', '/').lstrip('/')
+        if clean_name.startswith(('http://', 'https://')):
+            return clean_name
+        safe_path = urllib.parse.quote(clean_name, safe='/')
+        return f"{self.base_url}{safe_path}"

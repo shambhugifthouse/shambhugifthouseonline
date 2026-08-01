@@ -17,6 +17,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            request.session.set_expiry(2592000)  # 30 days active session persistence
             log_action(user, "User Login", "Authentication", f"User {username} logged in successfully", request)
             messages.success(request, f"Welcome back, {user.username}!")
             next_url = request.GET.get('next') or request.POST.get('next')

@@ -168,8 +168,19 @@ CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = [
     'https://shambhugifthouse.store',
     'https://www.shambhugifthouse.store',
-    'https://*.onrender.com',
+    'https://shambhugifthouseonline.onrender.com',
 ]
+
+# Permanent Session Configuration (Stay Logged In for 30 Days)
+SESSION_COOKIE_AGE = 2592000  # 30 Days in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = True
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Authentication URLs
 LOGIN_URL = '/auth/login/'

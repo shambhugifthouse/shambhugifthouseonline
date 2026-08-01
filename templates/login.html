@@ -5,71 +5,366 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — SHAMBHU GIFT HOUSE POS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
+        :root {
+            --brand-dark: #09241B;
+            --brand-emerald: #0E382A;
+            --brand-gold: #E5B84B;
+            --brand-gold-light: #F5DA8A;
+            --brand-gold-dark: #B88E2B;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%);
+            background: #061912;
             min-height: 100vh;
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow-x: hidden;
         }
-        .login-card {
-            background: #FFFFFF;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+
+        /* Ambient Animated Mesh Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at 20% 20%, #0E382A 0%, #061912 60%);
+        }
+
+        .glow-orb-1 {
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(229, 184, 75, 0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: floatGlow 12s infinite alternate ease-in-out;
+        }
+
+        .glow-orb-2 {
+            position: absolute;
+            bottom: -15%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(14, 56, 42, 0.6) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: floatGlow 16s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-30px, 40px) scale(1.1); }
+        }
+
+        /* Premium Glassmorphic Login Card */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
             width: 100%;
-            max-width: 420px;
-            padding: 2.5rem;
+            max-width: 440px;
+            padding: 1.25rem;
+        }
+
+        .login-card {
+            background: rgba(14, 56, 42, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(229, 184, 75, 0.25);
+            border-radius: 28px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.65), 0 0 30px rgba(229, 184, 75, 0.1);
+            padding: 2.75rem 2.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .login-card:hover {
+            border-color: rgba(229, 184, 75, 0.4);
+            box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.75), 0 0 40px rgba(229, 184, 75, 0.18);
+        }
+
+        /* Logo Emblem Box */
+        .logo-frame {
+            position: relative;
+            background: radial-gradient(circle, #0E382A 0%, #061912 100%);
+            border: 2px solid rgba(229, 184, 75, 0.4);
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 10px 25px rgba(0, 0, 0, 0.3);
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-frame:hover {
+            transform: scale(1.02);
+            border-color: var(--brand-gold);
+        }
+
+        .logo-frame img {
+            max-height: 140px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+        }
+
+        /* Typography */
+        .brand-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-gold-text {
+            background: linear-gradient(135deg, #F5DA8A 0%, #E5B84B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Form Inputs */
+        .custom-label {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.825rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group-custom {
+            background: rgba(6, 25, 18, 0.6);
+            border: 1.5px solid rgba(229, 184, 75, 0.25);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .input-group-custom:focus-within {
+            border-color: var(--brand-gold);
+            box-shadow: 0 0 0 4px rgba(229, 184, 75, 0.2);
+            background: rgba(6, 25, 18, 0.85);
+        }
+
+        .input-group-custom .input-group-text {
+            background: transparent;
+            border: none;
+            color: var(--brand-gold);
+            padding-left: 1.1rem;
+            padding-right: 0.6rem;
+        }
+
+        .input-group-custom .form-control {
+            background: transparent;
+            border: none;
+            color: #FFFFFF;
+            font-weight: 600;
+            padding: 0.85rem 1rem 0.85rem 0.25rem;
+        }
+
+        .input-group-custom .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 400;
+        }
+
+        .input-group-custom .form-control:focus {
+            box-shadow: none;
+        }
+
+        .toggle-password {
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 0 1rem;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-password:hover {
+            color: var(--brand-gold);
+        }
+
+        /* Metallic Gold Button */
+        .btn-gold {
+            background: linear-gradient(135deg, #F5DA8A 0%, #E5B84B 50%, #C99628 100%);
+            border: none;
+            color: #09241B;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            padding: 0.9rem;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(229, 184, 75, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(229, 184, 75, 0.45);
+            color: #04120D;
+        }
+
+        .btn-gold:active {
+            transform: translateY(0);
+        }
+
+        .btn-gold::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(30deg);
+            transition: all 0.6s ease;
+        }
+
+        .btn-gold:hover::after {
+            left: 100%;
+        }
+
+        /* Feature Badges */
+        .feature-badge {
+            background: rgba(229, 184, 75, 0.1);
+            border: 1px solid rgba(229, 184, 75, 0.2);
+            color: var(--brand-gold-light);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        /* Alert Box */
+        .alert-custom {
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            color: #FCA5A5;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <div class="text-center mb-4">
-            <div class="p-3 mb-3 rounded-4 shadow-sm" style="background: radial-gradient(circle, #0E382A 0%, #09241B 100%); border: 1px solid rgba(229, 184, 75, 0.3);">
-                <img src="{% static 'images/logo.jpg' %}" alt="SHAMBHU GIFT HOUSE Official Logo" style="max-height: 180px; width: auto;" class="img-fluid rounded-3">
-            </div>
-            <p class="text-secondary fw-semibold small mb-0">POS & Retail Business Management System</p>
-        </div>
+    <div class="ambient-bg">
+        <div class="glow-orb-1"></div>
+        <div class="glow-orb-2"></div>
+    </div>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} rounded-3 small py-2" role="alert">
-                    {{ message }}
+    <div class="login-wrapper">
+        <div class="login-card">
+            <!-- Brand Logo & Header -->
+            <div class="text-center mb-4">
+                <div class="logo-frame mb-3">
+                    <img src="{% static 'images/logo.jpg' %}" alt="SHAMBHU GIFT HOUSE Logo">
                 </div>
-            {% endfor %}
-        {% endif %}
-
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label fw-bold small text-secondary">Username</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-user text-muted"></i></span>
-                    <input type="text" name="username" class="form-control bg-light border-start-0" placeholder="Enter username" required autofocus>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label class="form-label fw-bold small text-secondary">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
-                    <input type="password" name="password" class="form-control bg-light border-start-0" placeholder="Enter password" required>
+                
+                <h4 class="brand-title mb-1">
+                    SHAMBHU <span class="brand-gold-text">GIFT HOUSE</span>
+                </h4>
+                <p class="text-white-50 small fw-medium mb-2">POS & Retail Business Management System</p>
+                
+                <div class="d-flex justify-content-center gap-1.5 flex-wrap mt-2">
+                    <span class="feature-badge"><i class="fa-solid fa-bolt me-1"></i> Instant POS</span>
+                    <span class="feature-badge"><i class="fa-solid fa-mobile-screen me-1"></i> Recharge</span>
+                    <span class="feature-badge"><i class="fa-solid fa-cloud me-1"></i> Cloud Sync</span>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold rounded-3 shadow-sm">
-                <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to POS
-            </button>
-        </form>
+            <!-- Messages / Errors -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-custom py-2.5 px-3 mb-3 d-flex align-items-center gap-2" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div>{{ message }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-        <div class="text-center mt-4">
-            <small class="text-muted">Protected POS Terminal • Authorized Access Only</small>
+            <!-- Login Form -->
+            <form method="POST" action="{% url 'auth:login' %}">
+                {% csrf_token %}
+                {% if request.GET.next %}
+                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
+
+                <!-- Username Input -->
+                <div class="mb-3">
+                    <label class="custom-label">Username / Mobile</label>
+                    <div class="input-group-custom d-flex align-items-center">
+                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="Enter POS username" required autofocus autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="custom-label">Password</label>
+                        <span class="small text-white-50" style="font-size: 0.75rem;">Keep session 30 days</span>
+                    </div>
+                    <div class="input-group-custom d-flex align-items-center">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="login_password_input" name="password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+                        <span class="toggle-password" onclick="togglePasswordVisibility()"><i class="fa-solid fa-eye" id="toggle_icon"></i></span>
+                    </div>
+                </div>
+
+                <!-- Remember Me Checkbox -->
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input bg-transparent border-secondary" type="checkbox" id="remember_me" checked style="border-color: rgba(229, 184, 75, 0.4) !important;">
+                        <label class="form-check-label text-white-50 small fw-medium ms-1" for="remember_me">
+                            Stay Logged In Permanently
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Metallic Gold Submit Button -->
+                <button type="submit" class="btn btn-gold w-100 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In to POS Terminal
+                </button>
+            </form>
+
+            <!-- Footer Note -->
+            <div class="text-center mt-4 pt-2 border-top border-white border-opacity-10">
+                <small class="text-white-50" style="font-size: 0.725rem;">
+                    <i class="fa-solid fa-shield-halved me-1 text-warning"></i> Secure POS Terminal • Authorized Access Only
+                </small>
+            </div>
         </div>
     </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('login_password_input');
+            const toggleIcon = document.getElementById('toggle_icon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

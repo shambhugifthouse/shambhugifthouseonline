@@ -154,7 +154,7 @@ function ShopFrontApp({ initialProducts = [], initialCategories = [], shopDetail
                 onClick={() => setPreviewProduct(p)}
               >
                 {p.image ? (
-                  <img src={p.image} alt={p.name} className="img-fluid max-h-100 object-fit-contain" style={{ maxHeight: '170px' }} />
+                  <img src={p.image} alt={p.name} className="img-fluid max-h-100 object-fit-contain" style={{ maxHeight: '170px' }} onError={(e) => { e.target.onerror = null; e.target.src = '/static/images/logo.jpg'; }} />
                 ) : (
                   <div className="text-center text-muted">
                     <i className="fa-solid fa-gift fs-1 text-danger opacity-50 mb-2"></i>
@@ -286,7 +286,7 @@ function ShopFrontApp({ initialProducts = [], initialCategories = [], shopDetail
               <div className="modal-body p-4">
                 <div className="text-center mb-3 bg-light rounded-3 p-4">
                   {previewProduct.image ? (
-                    <img src={previewProduct.image} alt={previewProduct.name} className="img-fluid max-h-200" style={{ maxHeight: '200px' }} />
+                    <img src={previewProduct.image} alt={previewProduct.name} className="img-fluid max-h-200" style={{ maxHeight: '200px' }} onError={(e) => { e.target.onerror = null; e.target.src = '/static/images/logo.jpg'; }} />
                   ) : (
                     <i className="fa-solid fa-gift fs-1 text-danger"></i>
                   )}

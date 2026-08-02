@@ -135,12 +135,13 @@ SUPABASE_SERVICE_ROLE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', 'sb_secr
 
 USE_SUPABASE_STORAGE = os.environ.get('USE_SUPABASE_STORAGE', 'True').lower() in ('true', '1', 'yes')
 
+MEDIA_ROOT = BASE_DIR / 'media'
+
 if USE_SUPABASE_STORAGE:
     DEFAULT_FILE_STORAGE = 'shambhu_pos.supabase_storage.SupabaseStorage'
     MEDIA_URL = f"https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/"
 else:
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
 
 # In-Memory Caching for 5ms Response Times
 CACHES = {

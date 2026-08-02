@@ -503,7 +503,7 @@
                     <div class="gift-product-card">
                         <div class="gift-img-box">
                             {% if p.image %}
-                            <img src="{{ p.image.url }}" alt="{{ p.name }}" class="gift-img" onerror="this.onerror=null; this.src='{% static \'images/logo.jpg\' %}';">
+                            <img src="{{ p.image.url }}" alt="{{ p.name }}" class="gift-img" onerror="this.onerror=null; this.src='{% static 'images/logo.jpg' %}';">
                             {% else %}
                             <div class="text-center p-3">
                                 <i class="fa-solid {{ p.category.icon|default:'fa-gift' }} fs-1 mb-2 d-block text-danger opacity-75"></i>

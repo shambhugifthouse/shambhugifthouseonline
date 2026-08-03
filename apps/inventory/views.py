@@ -62,8 +62,51 @@ def stock_list_view(request):
 
 @login_required
 def stock_spending_list_view(request):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'add':
+            product_id = request.POST.get('product_id')
+            qty = int(request.POST.get('quantity', '0'))
+            unit_cost = Decimal(request.POST.get('unit_cost', '0.00'))
+            note = request.POST.get('note', '').strip() or "Inventory Restock Purchase"
+
+            if product_id and qty > 0:
+                product = get_object_or_404(Product, id=product_id)
+                if unit_cost <= 0:
+                    unit_cost = product.cost_price
+
+                total_amt = Decimal(qty) * unit_cost
+                StockSpending.objects.create(
+                    product=product,
+                    quantity=qty,
+                    unit_cost=unit_cost,
+                    total_amount=total_amt,
+                    added_by=request.user,
+                    note=note
+                )
+                product.stock_quantity += qty
+                if unit_cost > 0:
+                    product.cost_price = unit_cost
+                product.save()
+
+                log_action(request.user, "Add Stock Spending", "Inventory", f"Logged purchase: {qty} {product.unit} of {product.name} (₹{total_amt})", request)
+                messages.success(request, f"Logged stock expenditure of ₹{total_amt:.2f} for '{product.name}'!")
+                return redirect('inventory:spending_list')
+            else:
+                messages.error(request, "Please select a valid product and quantity greater than 0.")
+                return redirect('inventory:spending_list')
+
+        elif action == 'delete':
+            spending_id = request.POST.get('spending_id')
+            spending = get_object_or_404(StockSpending, id=spending_id)
+            p_name = spending.product.name
+            spending.delete()
+            messages.warning(request, f"Deleted spending record for '{p_name}'.")
+            return redirect('inventory:spending_list')
+
     spendings = StockSpending.objects.select_related('product', 'product__category', 'added_by').all()
     categories = Category.objects.all()
+    all_products = Product.objects.filter(is_active=True).order_by('name')
 
     search_query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', '')
@@ -98,6 +141,7 @@ def stock_spending_list_view(request):
     context = {
         'spendings': spendings[:200],
         'categories': categories,
+        'all_products': all_products,
         'search_query': search_query,
         'category_id': category_id,
         'start_date': start_date,

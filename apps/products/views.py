@@ -159,7 +159,36 @@ def product_list_view(request):
                 )
 
             log_action(request.user, "Edit Product", "Products", f"Updated product: {product.name}", request)
+            cache.delete_pattern("store_home_*") if hasattr(cache, 'delete_pattern') else cache.clear()
             messages.success(request, f"Product '{product.name}' updated successfully!")
+            return redirect('products:list')
+
+        elif action == 'restock':
+            product_id = request.POST.get('product_id')
+            product = get_object_or_404(Product, id=product_id)
+            added_qty = int(request.POST.get('quantity', '0'))
+            unit_cost = Decimal(request.POST.get('unit_cost', str(product.cost_price)))
+            note = request.POST.get('note', '').strip() or "Restock via Product Catalog"
+
+            if added_qty > 0:
+                product.stock_quantity += added_qty
+                if unit_cost > 0:
+                    product.cost_price = unit_cost
+                product.save()
+
+                total_amt = Decimal(added_qty) * unit_cost
+                StockSpending.objects.create(
+                    product=product,
+                    quantity=added_qty,
+                    unit_cost=unit_cost,
+                    total_amount=total_amt,
+                    added_by=request.user,
+                    note=note
+                )
+                log_action(request.user, "Restock Product", "Products", f"Added {added_qty} {product.unit} to {product.name}", request)
+                messages.success(request, f"Successfully added {added_qty} {product.unit} to '{product.name}' stock!")
+            else:
+                messages.error(request, "Quantity must be greater than 0.")
             return redirect('products:list')
 
         elif action == 'delete':

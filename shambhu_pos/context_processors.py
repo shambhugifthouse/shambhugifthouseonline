@@ -1,33 +1,40 @@
+from django.core.cache import cache
+
 def business_profile(request):
     """Context processor to provide business info globally across templates."""
-    try:
-        from apps.authentication.models import BusinessProfile
-        profile = BusinessProfile.objects.first()
-        if not profile:
-            profile = BusinessProfile.objects.create(
-                shop_name="SHAMBHU GIFT HOUSE",
-                tagline="Gifts, Toys, Stationeries, Xerox & Printing Center",
-                owner_name="Shambhu Nath",
-                phone="+91 8975027902",
-                email="contact@shambhugifthouse.com",
-                gstin="10AAAAA0000A1Z5",
-                address="Dhandarphal Bk, Sangamner, Ahilyanagar, 422603",
-                receipt_header="Thank you for shopping at SHAMBHU GIFT HOUSE!",
-                receipt_footer="Goods once sold can be exchanged within 7 days. No Cash Refund."
-            )
-    except Exception:
-        profile = {
-            "shop_name": "SHAMBHU GIFT HOUSE",
-            "tagline": "Gifts, Toys, Stationeries, Xerox & Printing Center",
-            "owner_name": "Shambhu Nath",
-            "phone": "+91 8975027902",
-            "email": "contact@shambhugifthouse.com",
-            "gstin": "10AAAAA0000A1Z5",
-            "address": "Dhandarphal Bk, Sangamner, Ahilyanagar, 422603",
-            "receipt_header": "Thank you for shopping at SHAMBHU GIFT HOUSE!",
-            "receipt_footer": "Goods once sold can be exchanged within 7 days. No Cash Refund."
-        }
+    profile = cache.get('global_business_profile')
+    if profile is None:
+        try:
+            from apps.authentication.models import BusinessProfile
+            profile = BusinessProfile.objects.first()
+            if not profile:
+                profile = BusinessProfile.objects.create(
+                    shop_name="SHAMBHU GIFT HOUSE",
+                    tagline="Gifts, Toys, Stationeries, Xerox & Printing Center",
+                    owner_name="Shambhu Nath",
+                    phone="+91 8975027902",
+                    email="contact@shambhugifthouse.com",
+                    gstin="10AAAAA0000A1Z5",
+                    address="Dhandarphal Bk, Sangamner, Ahilyanagar, 422603",
+                    receipt_header="Thank you for shopping at SHAMBHU GIFT HOUSE!",
+                    receipt_footer="Goods once sold can be exchanged within 7 days. No Cash Refund."
+                )
+            cache.set('global_business_profile', profile, 3600)
+        except Exception:
+            profile = {
+                "shop_name": "SHAMBHU GIFT HOUSE",
+                "tagline": "Gifts, Toys, Stationeries, Xerox & Printing Center",
+                "owner_name": "Shambhu Nath",
+                "phone": "+91 8975027902",
+                "email": "contact@shambhugifthouse.com",
+                "gstin": "10AAAAA0000A1Z5",
+                "address": "Dhandarphal Bk, Sangamner, Ahilyanagar, 422603",
+                "receipt_header": "Thank you for shopping at SHAMBHU GIFT HOUSE!",
+                "receipt_footer": "Goods once sold can be exchanged within 7 days. No Cash Refund."
+            }
+            cache.set('global_business_profile', profile, 300)
     
     return {
         'shop': profile
     }
+

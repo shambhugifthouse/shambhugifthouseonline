@@ -46,8 +46,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.gzip.GZipMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,23 +80,38 @@ WSGI_APPLICATION = 'shambhu_pos.wsgi.application'
 ASGI_APPLICATION = 'shambhu_pos.asgi.application'
 
 # Database - Supabase Cloud PostgreSQL via IPv4 Transaction Pooler (Port 6543)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.caakvjsfxqrvlznfwfry',
-        'PASSWORD': 'Sangamner@2026',
-        'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
-        'PORT': '6543',
-        'CONN_MAX_AGE': 600,  # Persistent DB Connection Pool (10 mins) for 10x speedup
-        'CONN_HEALTH_CHECKS': True,
-        'OPTIONS': {
-            'sslmode': 'require',
-            'connect_timeout': 5,
-        },
-        'DISABLE_SERVER_SIDE_CURSORS': True,
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=0,  # MUST BE 0 for PgBouncer / Supabase Transaction Pooler (Port 6543) to avoid 1-2 min TCP hangs
+            conn_health_checks=True,
+        )
     }
-}
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+        'connect_timeout': 5,
+    }
+    DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'postgres'),
+            'USER': os.environ.get('DB_USER', 'postgres.caakvjsfxqrvlznfwfry'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'Sangamner@2026'),
+            'HOST': os.environ.get('DB_HOST', 'aws-0-ap-southeast-1.pooler.supabase.com'),
+            'PORT': os.environ.get('DB_PORT', '6543'),
+            'CONN_MAX_AGE': 0,  # MUST BE 0 for Supabase Transaction Pooler (Port 6543) to prevent 60-120s socket timeouts
+            'CONN_HEALTH_CHECKS': True,
+            'OPTIONS': {
+                'sslmode': 'require',
+                'connect_timeout': 5,
+            },
+            'DISABLE_SERVER_SIDE_CURSORS': True,
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -175,7 +190,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Permanent Session Configuration (Stay Logged In for 30 Days)
 SESSION_COOKIE_AGE = 2592000  # 30 Days in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = False
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True

@@ -21,12 +21,14 @@ def dashboard_view(request):
     monthly_invoices = Invoice.objects.filter(created_at__date__gte=start_of_month)
     monthly_revenue = monthly_invoices.aggregate(total=Sum('grand_total'))['total'] or Decimal('0.00')
 
+    from django.db.models import F
     total_products = Product.objects.filter(is_active=True).count()
-    low_stock_count = sum(1 for p in Product.objects.filter(is_active=True) if p.is_low_stock)
+    low_stock_qs = Product.objects.filter(is_active=True, stock_quantity__lte=F('min_stock_level'))
+    low_stock_count = low_stock_qs.count()
+    low_stock_items = list(low_stock_qs[:10])
 
     recent_invoices = Invoice.objects.select_related('billed_by')[:8]
     recent_logs = AuditLog.objects.select_related('user')[:8]
-    low_stock_items = [p for p in Product.objects.filter(is_active=True) if p.is_low_stock]
     total_khata = Customer.objects.aggregate(total=Sum('outstanding_balance'))['total'] or Decimal('0.00')
 
     total_stock_spending = StockSpending.objects.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')

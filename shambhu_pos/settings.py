@@ -82,6 +82,11 @@ ASGI_APPLICATION = 'shambhu_pos.asgi.application'
 # Database - Supabase Cloud PostgreSQL via IPv4 Transaction Pooler (Port 6543)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
+    # Auto-rewrite direct Supabase host (IPv6 only) to IPv4 pooler to prevent Render connection failure
+    if 'supabase.co' in DATABASE_URL and 'pooler' not in DATABASE_URL:
+        DATABASE_URL = DATABASE_URL.replace('db.caakvjsfxqrvlznfwfry.supabase.co', 'aws-0-ap-southeast-1.pooler.supabase.com')
+        DATABASE_URL = DATABASE_URL.replace(':5432', ':6543')
+
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
@@ -112,6 +117,12 @@ else:
             'DISABLE_SERVER_SIDE_CURSORS': True,
         }
     }
+
+# Fallback check: force IPv4 pooler if host points to IPv6 direct Supabase domain
+curr_host = DATABASES['default'].get('HOST', '')
+if 'supabase.co' in curr_host and 'pooler' not in curr_host:
+    DATABASES['default']['HOST'] = 'aws-0-ap-southeast-1.pooler.supabase.com'
+    DATABASES['default']['PORT'] = '6543'
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

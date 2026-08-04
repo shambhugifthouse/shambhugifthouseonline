@@ -149,8 +149,9 @@
                     </td>
                     <td>
                         <div class="d-flex align-items-center gap-2.5">
+{% static 'images/logo.jpg' as default_logo_url %}
                             {% if item.product.image %}
-                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded-3 border" style="width: 36px; height: 36px; object-fit: cover;" onerror="this.onerror=null; this.src='{% static 'images/logo.jpg' %}';">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded-3 border" style="width: 36px; height: 36px; object-fit: cover;" onerror="this.onerror=null; this.src='{{ default_logo_url }}';">
                             {% else %}
                                 <div class="bg-light rounded-3 text-secondary d-flex align-items-center justify-content-center border" style="width: 36px; height: 36px;">
                                     <i class="fa-solid fa-box fs-6"></i>

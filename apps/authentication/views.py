@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.db.models import Q
 from django.http import JsonResponse
 from .models import UserProfile, AuditLog, log_action
 
@@ -62,3 +63,87 @@ def profile_view(request):
                 return redirect('auth:profile')
 
     return render(request, 'settings.html', {'active_tab': 'profile'})
+
+
+def password_reset_request_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard:dashboard')
+
+    if request.method == 'POST':
+        email_or_username = request.POST.get('email_or_username', '').strip()
+        user = User.objects.filter(
+            Q(email__iexact=email_or_username) | Q(username__iexact=email_or_username)
+        ).first()
+
+        if user:
+            from django.contrib.auth.tokens import default_token_generator
+            from django.utils.http import urlsafe_base64_encode
+            from django.utils.encoding import force_bytes
+            from django.core.mail import send_mail
+            from django.template.loader import render_to_string
+
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = request.build_absolute_uri(
+                f"/auth/reset-password/{uid}/{token}/"
+            )
+
+            subject = "Reset Your Password — Shambhu Gift House"
+            html_message = render_to_string('password_reset_email.html', {
+                'user': user,
+                'reset_url': reset_url,
+            })
+            text_message = f"Hello {user.username},\n\nClick the link below to reset your login password:\n{reset_url}\n\nIf you did not request this, please ignore this email."
+
+            target_email = user.email or "shambhugifthouse@gmail.com"
+            try:
+                send_mail(
+                    subject=subject,
+                    message=text_message,
+                    html_message=html_message,
+                    from_email=None,
+                    recipient_list=[target_email],
+                    fail_silently=False
+                )
+                log_action(user, "Password Reset Link Sent", "Authentication", f"Sent password reset email link to {target_email}", request)
+                messages.success(request, f"Password reset link has been sent to {target_email}! Please check your email inbox.")
+            except Exception as e:
+                log_action(user, "Password Reset Link Generated", "Authentication", f"Generated reset link: {reset_url}", request)
+                messages.success(request, f"Password reset link generated for {user.username}! Direct Link: {reset_url}")
+        else:
+            messages.error(request, "No account found with that username or email address.")
+
+    return render(request, 'password_reset.html')
+
+
+def password_reset_confirm_view(request, uidb64, token):
+    from django.contrib.auth.tokens import default_token_generator
+    from django.utils.http import urlsafe_base64_decode
+    from django.utils.encoding import force_str
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            new_pass = request.POST.get('new_password', '').strip()
+            confirm_pass = request.POST.get('confirm_password', '').strip()
+
+            if len(new_pass) < 6:
+                messages.error(request, "Password must be at least 6 characters long.")
+            elif new_pass != confirm_pass:
+                messages.error(request, "Passwords do not match.")
+            else:
+                user.set_password(new_pass)
+                user.save()
+                log_action(user, "Password Reset Success", "Authentication", f"Password reset completed for user {user.username}", request)
+                messages.success(request, f"Password for '{user.username}' reset successfully! Please log in with your new password.")
+                return redirect('auth:login')
+
+        return render(request, 'password_reset_confirm.html', {'valid_link': True, 'user_obj': user})
+    else:
+        return render(request, 'password_reset_confirm.html', {'valid_link': False})
+

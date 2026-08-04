@@ -172,8 +172,24 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 if USE_SUPABASE_STORAGE:
     DEFAULT_FILE_STORAGE = 'shambhu_pos.supabase_storage.SupabaseStorage'
+    STORAGES = {
+        'default': {
+            'BACKEND': 'shambhu_pos.supabase_storage.SupabaseStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
     MEDIA_URL = f"https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET}/"
 else:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
     MEDIA_URL = '/media/'
 
 # In-Memory Caching for 5ms Response Times

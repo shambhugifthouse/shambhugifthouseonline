@@ -88,6 +88,7 @@ class RechargeTransaction(models.Model):
     PAYMENT_MODE_CHOICES = (
         ('CASH', 'Cash'),
         ('ONLINE', 'Online / UPI'),
+        ('KHATA', 'Customer Khata (Credit)'),
     )
 
     provider = models.ForeignKey(RechargeProvider, on_delete=models.CASCADE, related_name='transactions')
@@ -117,6 +118,7 @@ class OtherServiceTransaction(models.Model):
     PAYMENT_MODE_CHOICES = (
         ('CASH', 'Cash'),
         ('ONLINE', 'Online / UPI'),
+        ('KHATA', 'Customer Khata (Credit)'),
     )
 
     service_type = models.CharField(max_length=30, choices=SERVICE_TYPE_CHOICES, default='COLLEGE_FORM')

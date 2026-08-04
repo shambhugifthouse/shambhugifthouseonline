@@ -191,6 +191,10 @@ def recharge_view(request):
                     performed_by=request.user
                 )
 
+                if payment_mode == 'KHATA':
+                    from apps.customers.models import record_khata_credit
+                    record_khata_credit(customer_number, amount, f"Recharge {provider.name} ({customer_number})", request.user)
+
                 log_action(request.user, "Perform Recharge", "Recharge", f"Recharged ₹{amount} ({payment_mode}) for {provider.name} ({customer_number})", request)
 
                 if jio_bonus_applied:
@@ -320,8 +324,35 @@ def other_services_view(request):
                 performed_by=request.user
             )
 
+            if payment_mode == 'KHATA':
+                total_due = transaction_amount + service_charge
+                from apps.customers.models import record_khata_credit
+                record_khata_credit(customer_info, total_due, f"{tx.get_service_type_display()} - {title_or_biller}", request.user)
+
             log_action(request.user, "Record Other Service", "Services", f"{tx.get_service_type_display()} for {customer_info} - Charge: ₹{service_charge}", request)
             messages.success(request, f"Recorded {tx.get_service_type_display()} for '{customer_info}' with ₹{service_charge} commission/fee ({payment_mode}).")
+            return redirect('services:other_services')
+
+        elif action == 'edit_other_service':
+            tx_id = request.POST.get('tx_id')
+            tx = get_object_or_404(OtherServiceTransaction, id=tx_id)
+            tx.title_or_biller = request.POST.get('title_or_biller', tx.title_or_biller).strip()
+            tx.customer_info = request.POST.get('customer_info', tx.customer_info).strip()
+            tx.transaction_amount = Decimal(request.POST.get('transaction_amount', str(tx.transaction_amount)))
+            tx.service_charge = Decimal(request.POST.get('service_charge', str(tx.service_charge)))
+            old_mode = tx.payment_mode
+            new_mode = request.POST.get('payment_mode', tx.payment_mode)
+            tx.payment_mode = new_mode
+            tx.notes = request.POST.get('notes', '').strip() or None
+            tx.save()
+
+            if new_mode == 'KHATA' and old_mode != 'KHATA':
+                total_due = tx.transaction_amount + tx.service_charge
+                from apps.customers.models import record_khata_credit
+                record_khata_credit(tx.customer_info, total_due, f"{tx.get_service_type_display()} - {tx.title_or_biller}", request.user)
+
+            log_action(request.user, "Edit Other Service Entry", "Services", f"Updated service log #{tx.id} for {tx.customer_info}", request)
+            messages.success(request, f"Updated service record for '{tx.customer_info}'.")
             return redirect('services:other_services')
 
         elif action == 'delete_other_service':

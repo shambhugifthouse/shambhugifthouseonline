@@ -124,6 +124,13 @@ if 'supabase.co' in curr_host and 'pooler' not in curr_host:
     DATABASES['default']['HOST'] = 'aws-0-ap-southeast-1.pooler.supabase.com'
     DATABASES['default']['PORT'] = '6543'
 
+# Guarantee tenant ID in username for Supabase Pooler (Port 6543 / 5432) to prevent ENOIDENTIFIER error
+project_ref = os.environ.get('SUPABASE_PROJECT_REF', 'caakvjsfxqrvlznfwfry')
+curr_user = DATABASES['default'].get('USER', '')
+if project_ref and not curr_user.endswith(f".{project_ref}"):
+    base_user = curr_user.split('.')[0] if '.' in curr_user else curr_user
+    DATABASES['default']['USER'] = f"{base_user}.{project_ref}"
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {

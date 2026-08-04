@@ -216,8 +216,7 @@ function PosBillingApp({ initialProducts = [], initialCategories = [], shopDetai
 
   // WhatsApp Bill Link
   const getWhatsAppBillUrl = () => {
-    if (!customerPhone) return '#';
-    const msg = `Hello ${customerName || 'Valued Customer'}!\n\nThank you for shopping at *SHAMBHU GIFT HOUSE* 🎁\n\n*Invoice Summary:*\nItems: ${cart.length}\nGrand Total: ₹${grandTotal.toFixed(2)}\nPayment: ${paymentMode.toUpperCase()}\n\nVisit us again for gifts that create smiles! 😊`;
+    const msg = `Hello ${customerName || 'Valued Customer'}!\n\nThank you for shopping at *SHAMBHU GIFT HOUSE* 🎁\n\n*Invoice Summary:*\nItems: ${cart.length}\nGrand Total: ₹${grandTotal.toFixed(2)}\nPayment: ${paymentMode.toUpperCase()}\n\n🌐 Visit our online store: https://shambhugifthouse.store/\n\nVisit us again for gifts that create smiles! 😊`;
     return `https://wa.me/91${customerPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
   };
 

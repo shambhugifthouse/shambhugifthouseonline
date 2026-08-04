@@ -287,13 +287,20 @@
                 </div>
             </div>
 
-            <!-- Messages / Errors -->
+            <!-- Messages / Alerts -->
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-custom py-2.5 px-3 mb-3 d-flex align-items-center gap-2" role="alert">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <div>{{ message }}</div>
-                    </div>
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success py-2.5 px-3 mb-3 d-flex align-items-center gap-2 rounded-3 bg-success bg-opacity-20 border-success text-success-light" style="font-size: 0.85rem; color: #a7f3d0;" role="alert">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <div>{{ message|urlize|safe }}</div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-custom py-2.5 px-3 mb-3 d-flex align-items-center gap-2" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div>{{ message|urlize|safe }}</div>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
 

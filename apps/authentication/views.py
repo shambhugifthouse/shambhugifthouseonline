@@ -69,55 +69,51 @@ def password_reset_request_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard:dashboard')
 
-    if request.method == 'POST':
-        email_or_username = request.POST.get('email_or_username', '').strip()
-        user = User.objects.filter(
-            Q(email__iexact=email_or_username) | Q(username__iexact=email_or_username)
-        ).first()
+    # Directly find the primary admin user or account with email 'thepranit.19@gmail.com'
+    user = User.objects.filter(Q(email__iexact='thepranit.19@gmail.com') | Q(username='admin')).first()
+    if not user:
+        user = User.objects.filter(is_superuser=True).first()
 
-        if not user and email_or_username.lower() in ('admin', 'thepranit.19@gmail.com', 'shambhugifthouse1@gmail.com'):
-            user = User.objects.filter(is_superuser=True).first()
+    if user:
+        from django.contrib.auth.tokens import default_token_generator
+        from django.utils.http import urlsafe_base64_encode
+        from django.utils.encoding import force_bytes
+        from django.core.mail import send_mail
+        from django.template.loader import render_to_string
 
-        if user:
-            from django.contrib.auth.tokens import default_token_generator
-            from django.utils.http import urlsafe_base64_encode
-            from django.utils.encoding import force_bytes
-            from django.core.mail import send_mail
-            from django.template.loader import render_to_string
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_url = request.build_absolute_uri(
+            f"/auth/reset-password/{uid}/{token}/"
+        )
 
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_url = request.build_absolute_uri(
-                f"/auth/reset-password/{uid}/{token}/"
+        target_email = "thepranit.19@gmail.com"
+
+        subject = "Reset Your Password — Shambhu Gift House"
+        html_message = render_to_string('password_reset_email.html', {
+            'user': user,
+            'reset_url': reset_url,
+        })
+        text_message = f"Hello {user.username},\n\nClick the link below to reset your login password:\n{reset_url}\n\nIf you did not request this, please ignore this email."
+
+        try:
+            send_mail(
+                subject=subject,
+                message=text_message,
+                html_message=html_message,
+                from_email=None,
+                recipient_list=[target_email],
+                fail_silently=False
             )
+            log_action(user, "Password Reset Link Sent", "Authentication", f"Sent password reset email link to {target_email}", request)
+            messages.success(request, f"🔑 Password reset link sent to {target_email}! Please check your email inbox.")
+        except Exception as e:
+            log_action(user, "Password Reset Link Generated", "Authentication", f"Generated reset link: {reset_url}", request)
+            messages.success(request, f"🔑 Password reset link generated! Click here to reset: {reset_url}")
+    else:
+        messages.error(request, "Admin account not found.")
 
-            target_email = email_or_username if '@' in email_or_username else (user.email or "thepranit.19@gmail.com")
-
-            subject = "Reset Your Password — Shambhu Gift House"
-            html_message = render_to_string('password_reset_email.html', {
-                'user': user,
-                'reset_url': reset_url,
-            })
-            text_message = f"Hello {user.username},\n\nClick the link below to reset your login password:\n{reset_url}\n\nIf you did not request this, please ignore this email."
-
-            try:
-                send_mail(
-                    subject=subject,
-                    message=text_message,
-                    html_message=html_message,
-                    from_email=None,
-                    recipient_list=[target_email],
-                    fail_silently=False
-                )
-                log_action(user, "Password Reset Link Sent", "Authentication", f"Sent password reset email link to {target_email}", request)
-                messages.success(request, f"Password reset link has been sent to {target_email}! Please check your email inbox.")
-            except Exception as e:
-                log_action(user, "Password Reset Link Generated", "Authentication", f"Generated reset link: {reset_url}", request)
-                messages.success(request, f"Password reset link generated for {user.username}! Click here to reset: {reset_url}")
-        else:
-            messages.error(request, "No account found matching that username or email address.")
-
-    return render(request, 'password_reset.html')
+    return redirect('auth:login')
 
 
 def password_reset_confirm_view(request, uidb64, token):

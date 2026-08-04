@@ -55,6 +55,100 @@
     </div>
 </div>
 
+<!-- CUSTOM DESIGNED QUICK SERVICES SECTION -->
+<div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <div>
+            <h5 class="fw-bold font-heading text-dark mb-0">
+                <i class="fa-solid fa-wand-magic-sparkles me-2 text-primary"></i> Custom Designed Services & Quick Shortcuts
+            </h5>
+            <small class="text-muted">Click any pre-configured service design below to auto-fill entry form</small>
+        </div>
+        <button type="button" class="btn btn-sm btn-primary rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#designServiceModal">
+            <i class="fa-solid fa-plus me-1.5"></i> Design New Service
+        </button>
+    </div>
+
+    <div class="row g-2.5">
+        {% for d in custom_designs %}
+        <div class="col-md-3 col-sm-6">
+            <div class="card border border-light shadow-sm rounded-3 p-3 h-100 position-relative hover-shadow" style="cursor: pointer;" onclick="selectDesignedService('{{ d.title|escapejs }}', '{{ d.default_govt_fee }}', '{{ d.default_service_charge }}')">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="p-2.5 rounded-3 bg-{{ d.badge_color }} bg-opacity-10 text-{{ d.badge_color }} fs-5">
+                        <i class="fa-solid {{ d.icon_class }}"></i>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <h6 class="fw-bold text-dark mb-0 text-truncate font-heading">{{ d.title }}</h6>
+                        <small class="text-muted text-uppercase font-monospace" style="font-size: 0.68rem;">Charge: ₹{{ d.default_service_charge }}</small>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+                    <small class="text-muted">Govt Fee: ₹{{ d.default_govt_fee }}</small>
+                    <span class="badge bg-{{ d.badge_color }} bg-opacity-15 text-{{ d.badge_color }} rounded-pill">Quick Fill</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal: Design New Custom Service -->
+<div class="modal fade" id="designServiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 p-3">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold font-heading"><i class="fa-solid fa-palette text-primary me-2"></i> Design New Custom Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'services:other_services' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_service_design">
+                <div class="modal-body row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-secondary">Service Title / Name</label>
+                        <input type="text" name="title" class="form-control fw-bold" placeholder="e.g. PAN Card Application, Passport Filing" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-secondary">Category Tab</label>
+                        <select name="category" class="form-select fw-bold">
+                            <option value="COLLEGE_FORM" selected>🎓 College & Online Forms</option>
+                            <option value="CASH_WITHDRAWAL">🏦 AEPS / Cash Withdrawal</option>
+                            <option value="ELECTRICITY_BILL">⚡ Light Bill Payment</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-secondary">FontAwesome Icon</label>
+                        <select name="icon_class" class="form-select font-monospace">
+                            <option value="fa-file-signature">fa-file-signature (Form)</option>
+                            <option value="fa-id-card">fa-id-card (ID/PAN)</option>
+                            <option value="fa-graduation-cap">fa-graduation-cap (College)</option>
+                            <option value="fa-passport">fa-passport (Passport)</option>
+                            <option value="fa-file-invoice">fa-file-invoice (Certificate)</option>
+                            <option value="fa-book-bookmark">fa-book-bookmark (Gazette)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-secondary">Default Govt / Exam Fee (₹)</label>
+                        <input type="number" step="0.01" name="default_govt_fee" class="form-control fw-bold" value="0.00" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-secondary">Default Service Charge (₹)</label>
+                        <input type="number" step="0.01" name="default_service_charge" class="form-control text-success fw-bold" value="100.00" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-secondary">Description / Remarks</label>
+                        <input type="text" name="description" class="form-control" placeholder="e.g. Pre-configured online service filing">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Save Custom Service Design</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- SERVICE TRANSACTION ENTRY FORMS CARD -->
 <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
     <h5 class="fw-bold font-heading text-dark mb-3">
@@ -395,13 +489,22 @@ function handleSafeFormSubmit(form) {
     return true;
 }
 
-function calcWithdrawalFee(amt) {
-    const val = parseFloat(amt || 0);
-    const chargeInput = document.getElementById('withdraw_charge');
-    if (val > 0) {
-        // Auto-calculate 1% or ₹20 minimum commission fee
-        let fee = Math.max(20, Math.round(val * 0.01));
-        chargeInput.value = fee.toFixed(2);
+function selectDesignedService(title, fee, charge) {
+    const formTab = document.getElementById('forms-tab');
+    if (formTab) {
+        formTab.click();
+    }
+    const titleInput = document.querySelector('#forms-panel input[name="title_or_biller"]');
+    const feeInput = document.querySelector('#forms-panel input[name="transaction_amount"]');
+    const chargeInput = document.querySelector('#forms-panel input[name="service_charge"]');
+
+    if (titleInput) titleInput.value = title;
+    if (feeInput) feeInput.value = fee;
+    if (chargeInput) chargeInput.value = charge;
+
+    const panel = document.getElementById('forms-panel');
+    if (panel) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 </script>

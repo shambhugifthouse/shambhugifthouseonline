@@ -284,12 +284,71 @@ def recharge_view(request):
 
 @login_required
 def other_services_view(request):
-    from .models import OtherServiceTransaction
+    from .models import OtherServiceTransaction, CustomServiceDesign
+
+    # Seed default custom service designs if empty
+    if not CustomServiceDesign.objects.exists():
+        default_designs = [
+            {"title": "PAN Card Application", "category": "COLLEGE_FORM", "icon_class": "fa-id-card", "badge_color": "primary", "default_govt_fee": Decimal("107.00"), "default_service_charge": Decimal("100.00"), "description": "New PAN Card / Correction filing"},
+            {"title": "MahaDBT Scholarship", "category": "COLLEGE_FORM", "icon_class": "fa-graduation-cap", "badge_color": "success", "default_govt_fee": Decimal("0.00"), "default_service_charge": Decimal("100.00"), "description": "Post-Matric Scholarship Form"},
+            {"title": "Income Certificate Form", "category": "COLLEGE_FORM", "icon_class": "fa-file-invoice", "badge_color": "info", "default_govt_fee": Decimal("50.00"), "default_service_charge": Decimal("100.00"), "description": "Tehsildar Income Certificate filing"},
+            {"title": "Passport Online Application", "category": "COLLEGE_FORM", "icon_class": "fa-passport", "badge_color": "warning", "default_govt_fee": Decimal("1500.00"), "default_service_charge": Decimal("250.00"), "description": "Fresh Passport Appointment Filing"},
+            {"title": "Gazette Registration", "category": "COLLEGE_FORM", "icon_class": "fa-book-bookmark", "badge_color": "dark", "default_govt_fee": Decimal("500.00"), "default_service_charge": Decimal("200.00"), "description": "Name Change Gazette Publication"},
+        ]
+        for d in default_designs:
+            CustomServiceDesign.objects.create(**d)
 
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        if action == 'add_other_service':
+        if action == 'add_service_design':
+            title = request.POST.get('title', '').strip()
+            category = request.POST.get('category', 'COLLEGE_FORM')
+            icon_class = request.POST.get('icon_class', 'fa-file-signature').strip()
+            badge_color = request.POST.get('badge_color', 'primary').strip()
+            default_govt_fee = Decimal(request.POST.get('default_govt_fee', '0.00'))
+            default_service_charge = Decimal(request.POST.get('default_service_charge', '100.00'))
+            description = request.POST.get('description', '').strip() or None
+
+            design = CustomServiceDesign.objects.create(
+                title=title,
+                category=category,
+                icon_class=icon_class,
+                badge_color=badge_color,
+                default_govt_fee=default_govt_fee,
+                default_service_charge=default_service_charge,
+                description=description
+            )
+            log_action(request.user, "Design Custom Service", "Services", f"Designed service: {design.title} (Charge: ₹{design.default_service_charge})", request)
+            messages.success(request, f"New custom service '{design.title}' designed successfully!")
+            return redirect('services:other_services')
+
+        elif action == 'edit_service_design':
+            design_id = request.POST.get('design_id')
+            design = get_object_or_404(CustomServiceDesign, id=design_id)
+            design.title = request.POST.get('title', design.title).strip()
+            design.category = request.POST.get('category', design.category)
+            design.icon_class = request.POST.get('icon_class', design.icon_class).strip()
+            design.badge_color = request.POST.get('badge_color', design.badge_color).strip()
+            design.default_govt_fee = Decimal(request.POST.get('default_govt_fee', str(design.default_govt_fee)))
+            design.default_service_charge = Decimal(request.POST.get('default_service_charge', str(design.default_service_charge)))
+            design.description = request.POST.get('description', '').strip() or None
+            design.save()
+
+            log_action(request.user, "Edit Service Design", "Services", f"Updated service design: {design.title}", request)
+            messages.success(request, f"Updated custom service design '{design.title}'.")
+            return redirect('services:other_services')
+
+        elif action == 'delete_service_design':
+            design_id = request.POST.get('design_id')
+            design = get_object_or_404(CustomServiceDesign, id=design_id)
+            design.is_active = False
+            design.save()
+            log_action(request.user, "Delete Service Design", "Services", f"Deactivated service design: {design.title}", request)
+            messages.warning(request, f"Custom service '{design.title}' removed from active list.")
+            return redirect('services:other_services')
+
+        elif action == 'add_other_service':
             service_type = request.POST.get('service_type', 'COLLEGE_FORM')
             title_or_biller = request.POST.get('title_or_biller', '').strip()
             customer_info = request.POST.get('customer_info', '').strip()
@@ -372,6 +431,9 @@ def other_services_view(request):
     withdrawals_count = qs.filter(service_type='CASH_WITHDRAWAL').count()
     total_charges_collected = qs.aggregate(total=Sum('service_charge'))['total'] or Decimal('0.00')
 
+    # Custom Service Designs
+    custom_designs = CustomServiceDesign.objects.filter(is_active=True)
+
     # Slice for display table
     transactions = qs[:100]
 
@@ -381,6 +443,7 @@ def other_services_view(request):
         'light_bills_count': light_bills_count,
         'withdrawals_count': withdrawals_count,
         'total_charges_collected': total_charges_collected,
+        'custom_designs': custom_designs,
     }
     return render(request, 'other_services.html', context)
 

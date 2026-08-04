@@ -138,4 +138,23 @@ class OtherServiceTransaction(models.Model):
         return f"{self.get_service_type_display()} - {self.customer_info} (Charge: ₹{self.service_charge})"
 
 
+class CustomServiceDesign(models.Model):
+    title = models.CharField(max_length=150, help_text="e.g. PAN Card Application, Aadhaar Update, MahaDBT Scholarship")
+    category = models.CharField(max_length=30, choices=OtherServiceTransaction.SERVICE_TYPE_CHOICES, default='COLLEGE_FORM')
+    icon_class = models.CharField(max_length=50, default='fa-file-signature', help_text="FontAwesome icon class")
+    badge_color = models.CharField(max_length=30, default='primary', help_text="primary, success, warning, info, dark")
+    default_govt_fee = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), help_text="Default Govt/Exam Fee")
+    default_service_charge = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('100.00'), help_text="Default Filing Charge")
+    description = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self):
+        return f"{self.title} (Charge: ₹{self.default_service_charge})"
+
+
+
 

@@ -213,22 +213,41 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Reverse Proxy & SSL Settings (Crucial for Render & HTTPS)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
 # CORS & CSRF settings
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = [
     'https://shambhugifthouse.store',
     'https://www.shambhugifthouse.store',
     'https://shambhugifthouseonline.onrender.com',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:1111',
+    'http://localhost:8000',
+    'http://localhost:1111',
 ]
 
 # Permanent Session Configuration (Stay Logged In for 30 Days)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 2592000  # 30 Days in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = False
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_NAME = 'shambhu_sessionid'
+CSRF_COOKIE_NAME = 'shambhu_csrftoken'
+
+if DEBUG:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
 

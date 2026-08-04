@@ -536,7 +536,7 @@
                                     <small class="text-muted font-monospace">SKU: {{ p.sku }}</small>
                                 </div>
 
-                                <a href="https://wa.me/918975027902?text=Hello%20Shambhu%20Gift%20House!%20I%20want%20to%20buy%20/%20inquire:%0A%0A*%F0%9F%8E%81%20Product:*%20{{ p.name|urlencode }}%0A*%F0%9F%8F%B7%EF%B8%8F%20SKU:*%20{{ p.sku }}%0A*%F0%9F%92%B5%20Price:*%20%E2%82%B9{{ p.selling_price }}{% if p.image %}%0A*%F0%9F%96%BC%EF%B8%8F%20Product%20Image:*%20{{ request.scheme }}://{{ request.get_host }}{{ p.image.url|urlencode }}{% endif %}" target="_blank" class="btn-whatsapp-gift">
+                                <a href="https://wa.me/918975027902?text=Hello%20Shambhu%20Gift%20House!%20I%20want%20to%20buy%20/%20inquire:%0A%0A*%F0%9F%8E%81%20Product:*%20{{ p.name|urlencode }}%0A*%F0%9F%8F%B7%EF%B8%8F%20SKU:*%20{{ p.sku }}%0A*%F0%9F%92%B5%20Price:*%20%E2%82%B9{{ p.selling_price }}{% if p.image %}{% if 'http' in p.image.url %}%0A*%F0%9F%96%BC%EF%B8%8F%20Product%20Image:*%20{{ p.image.url|urlencode }}{% else %}%0A*%F0%9F%96%BC%EF%B8%8F%20Product%20Image:*%20{{ request.scheme }}://{{ request.get_host }}{{ p.image.url|urlencode }}{% endif %}{% endif %}" target="_blank" class="btn-whatsapp-gift">
                                     <i class="fa-brands fa-whatsapp fs-5"></i> Order on WhatsApp
                                 </a>
                             </div>

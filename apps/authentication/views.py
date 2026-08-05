@@ -93,7 +93,7 @@ def password_reset_request_view(request):
         send_password_reset_email(user, reset_url)
 
         log_action(user, "Password Reset Link Sent", "Authentication", f"Initiated password reset for {target_email}", request)
-        messages.success(request, f"🔑 Password reset link sent to {target_email}! Check inbox or click here: {reset_url}")
+        messages.success(request, f"🔑 Password reset link sent to {target_email}! Please check your email inbox.")
     else:
         messages.error(request, "Admin account not found.")
 

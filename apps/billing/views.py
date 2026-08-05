@@ -9,6 +9,7 @@ from .models import Invoice, InvoiceItem
 from apps.products.models import Product, Category
 from apps.customers.models import Customer
 from apps.authentication.models import log_action
+from urllib.parse import quote
 
 @login_required
 def billing_pos_view(request):
@@ -71,9 +72,9 @@ def process_checkout_api(request):
         for item in items_data:
             p_id = item.get('id')
             p_name = item.get('name', 'Custom Item')
-            qty = int(item.get('quantity', 1))
+            qty = int(item.get('quantity') or item.get('qty') or 1)
             unit_price = Decimal(str(item.get('price', 0)))
-            gst_pct = Decimal(str(item.get('gst_percent', 0)))
+            gst_pct = Decimal(str(item.get('gst_percent') or item.get('gst') or 0))
             item_type = item.get('item_type', 'PRODUCT')
 
             item_subtotal = unit_price * qty
@@ -115,12 +116,22 @@ def process_checkout_api(request):
                 customer_obj.outstanding_balance += grand_total
             customer_obj.save()
 
+        whatsapp_url = None
+        if cust_phone:
+            clean_phone = cust_phone.replace(' ', '').replace('+', '').replace('-', '')
+            if len(clean_phone) == 10:
+                clean_phone = f"91{clean_phone}"
+            msg_text = f"Hello {cust_name}! Thank you for shopping at SHAMBHU GIFT HOUSE.\n\n*Invoice No:* #{inv_number}\n*Total Paid:* ₹{grand_total:.2f}\n*Payment Mode:* {payment_mode}\n\nThank you, visit again!"
+            whatsapp_url = f"https://wa.me/{clean_phone}?text={quote(msg_text)}"
+
         log_action(request.user, "Checkout POS Invoice", "Billing", f"Created Invoice #{inv_number} for ₹{grand_total}", request)
         return JsonResponse({
             'status': 'success',
             'invoice_id': invoice.id,
             'invoice_number': invoice.invoice_number,
-            'grand_total': float(grand_total)
+            'grand_total': float(grand_total),
+            'total_amount': f"{grand_total:.2f}",
+            'whatsapp_url': whatsapp_url
         })
 
     except Exception as e:

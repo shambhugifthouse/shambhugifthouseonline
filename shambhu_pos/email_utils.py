@@ -67,6 +67,8 @@ def send_email_async(
     thread.start()
 
 
+import time
+
 def send_password_reset_email(user, reset_url: str):
     """
     Helper utility to dispatch transactional Password Reset email.
@@ -77,7 +79,9 @@ def send_password_reset_email(user, reset_url: str):
         'reset_url': reset_url,
         'site_name': 'Shambhu Gift House POS',
     }
-    subject = "Reset Your Password - Shambhu Gift House"
+    # Unique subject reference to prevent Gmail conversation thread collapsing
+    ref_id = int(time.time()) % 100000
+    subject = f"Reset Your Password - Shambhu Gift House [Ref #{ref_id}]"
     send_email_async(
         subject=subject,
         template_name='password_reset_email.html',

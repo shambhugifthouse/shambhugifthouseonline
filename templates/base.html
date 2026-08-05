@@ -162,10 +162,6 @@
                     <a href="{% url 'personal_services:dashboard' %}" class="nav-link {% if request.resolver_match.namespace == 'personal_services' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                         <i class="fa-solid fa-wallet w-20 text-info"></i> Personal Services
                     </a>
-                    <a href="{% url 'personal_services:profit_report' %}" class="nav-link {% if request.resolver_match.namespace == 'personal_services' and request.resolver_match.url_name == 'profit_report' %}active{% endif %}" style="background: rgba(229, 184, 75, 0.12); border: 1px solid rgba(229, 184, 75, 0.3);">
-                        <i class="fa-solid fa-file-pdf w-20 text-warning"></i> <span class="text-warning">Overall Profit & PDF</span>
-                        <span class="badge bg-warning text-dark ms-auto" style="font-size: 0.65rem; font-weight: 800;">NEW</span>
-                    </a>
                     <a href="{% url 'customers:list' %}" class="nav-link {% if request.resolver_match.namespace == 'customers' %}active{% endif %}">
                         <i class="fa-solid fa-users w-20"></i> Customers & Khata
                     </a>
@@ -175,6 +171,19 @@
                     <a href="{% url 'reports:reports' %}" class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
                         <i class="fa-solid fa-file-invoice-dollar w-20"></i> Sales Reports
                     </a>
+
+                    <!-- Bottom Featured Tab: Overall Profit & PDF Report -->
+                    <div class="mt-3 pt-2 border-top border-secondary border-opacity-20">
+                        <a href="{% url 'personal_services:profit_report' %}" class="nav-link p-2.5 rounded-3 d-flex align-items-center justify-content-between text-decoration-none {% if request.resolver_match.namespace == 'personal_services' and request.resolver_match.url_name == 'profit_report' %}active{% endif %}" style="background: linear-gradient(135deg, rgba(229, 184, 75, 0.18) 0%, rgba(201, 150, 40, 0.08) 100%); border: 1px solid rgba(229, 184, 75, 0.35); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); transition: all 0.3s ease;">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <div class="bg-warning text-dark rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; font-size: 0.85rem;">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </div>
+                                <span class="fw-bold text-warning" style="font-size: 0.88rem; letter-spacing: 0.2px;">Overall Profit & PDF</span>
+                            </div>
+                            <span class="badge bg-warning text-dark font-sans shadow-sm" style="font-size: 0.625rem; font-weight: 800; padding: 3px 7px;">REPORT</span>
+                        </a>
+                    </div>
                 </nav>
             </div>
 

@@ -200,6 +200,11 @@ CACHES = {
     }
 }
 
+# WhiteNoise High-Performance Caching & Compression (1-Year Cache Control)
+WHITENOISE_MAX_AGE = 31536000  # 1 Year browser cache for static files (CSS, JS, Images)
+WHITENOISE_KEEP_ONLY_HASHED_FILES = False
+WHITENOISE_MANIFEST_STRICT = False
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -230,8 +235,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:1111',
 ]
 
-# Permanent Session Configuration (Stay Logged In for 30 Days)
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# Permanent Cached Session Configuration (RAM Cache + DB Fallback for 5ms speed)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_COOKIE_AGE = 2592000  # 30 Days in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = False

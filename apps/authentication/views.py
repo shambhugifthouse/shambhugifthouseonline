@@ -65,22 +65,7 @@ def profile_view(request):
     return render(request, 'settings.html', {'active_tab': 'profile'})
 
 
-import threading
-
-def _send_email_async(subject, text_message, html_message, target_email):
-    try:
-        from django.core.mail import send_mail
-        send_mail(
-            subject=subject,
-            message=text_message,
-            html_message=html_message,
-            from_email=None,
-            recipient_list=[target_email],
-            fail_silently=True
-        )
-    except Exception:
-        pass
-
+from shambhu_pos.email_utils import send_password_reset_email
 
 def password_reset_request_view(request):
     if request.user.is_authenticated:
@@ -95,7 +80,6 @@ def password_reset_request_view(request):
         from django.contrib.auth.tokens import default_token_generator
         from django.utils.http import urlsafe_base64_encode
         from django.utils.encoding import force_bytes
-        from django.template.loader import render_to_string
 
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -105,17 +89,8 @@ def password_reset_request_view(request):
 
         target_email = "thepranit.19@gmail.com"
 
-        subject = "Reset Your Password — Shambhu Gift House"
-        html_message = render_to_string('password_reset_email.html', {
-            'user': user,
-            'reset_url': reset_url,
-        })
-        text_message = f"Hello {user.username},\n\nClick the link below to reset your login password:\n{reset_url}\n\nIf you did not request this, please ignore this email."
-
-        # Dispatch async background thread so Gunicorn worker NEVER hangs or times out
-        t = threading.Thread(target=_send_email_async, args=(subject, text_message, html_message, target_email))
-        t.daemon = True
-        t.start()
+        # Dispatch non-blocking template-driven email via email_utils
+        send_password_reset_email(user, reset_url)
 
         log_action(user, "Password Reset Link Sent", "Authentication", f"Initiated password reset for {target_email}", request)
         messages.success(request, f"🔑 Password reset link sent to {target_email}! Check inbox or click here: {reset_url}")

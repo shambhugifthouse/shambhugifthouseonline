@@ -1,55 +1,386 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block page_title %}Quick POS Billing Counter{% endblock %}
-{% block page_subtitle %}Interactive React 18 barcode checkout, tax calculator & WhatsApp receipt generator{% endblock %}
+{% block page_title %}Quick POS Billing Terminal{% endblock %}
+{% block page_subtitle %}Interactive barcode checkout, discount calculator & WhatsApp receipt generator{% endblock %}
 
 {% block content %}
-<!-- React POS Mount Point -->
-<div id="react-pos-root">
-    <div class="text-center py-5 text-muted">
-        <div class="spinner-border text-warning mb-2" role="status"></div>
-        <div class="fw-bold">Initializing React 18 POS Billing Counter...</div>
+<div class="container-fluid px-0">
+    <div class="row g-3">
+
+        <!-- Left Column: Product Selection & Catalog -->
+        <div class="col-lg-7 col-xl-8">
+            <div class="card border-0 shadow-lg rounded-4 bg-dark bg-opacity-60 backdrop-blur p-3.5 mb-3 border-start border-4 border-warning">
+                <!-- Barcode & Search Input Bar -->
+                <div class="row g-2 align-items-center mb-3">
+                    <div class="col-md-8">
+                        <div class="input-group input-group-lg shadow-sm rounded-3">
+                            <span class="input-group-text bg-dark border-secondary border-opacity-40 text-warning px-3">
+                                <i class="fa-solid fa-barcode fs-4"></i>
+                            </span>
+                            <input type="text" id="pos_search_input" class="form-control bg-dark border-secondary border-opacity-40 text-white fw-bold ps-2" placeholder="Scan Barcode or Search Product / SKU... (Press F2)" autofocus autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="pos_category_filter" class="form-select form-select-lg bg-dark border-secondary border-opacity-40 text-white fw-bold">
+                            <option value="">All Categories</option>
+                            {% for c in categories %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Products Grid / Table -->
+                <div class="product-catalog-container custom-scroll" style="max-height: 520px; overflow-y: auto;">
+                    <div class="row g-2.5" id="products_grid">
+                        {% for p in products %}
+                        <div class="col-sm-6 col-md-4 col-xl-3 product-card-item" data-category="{{ p.category_id }}" data-search="{{ p.name|lower }} {{ p.sku|lower }} {{ p.barcode|default:''|lower }}">
+                            <div class="card h-100 border-secondary border-opacity-20 bg-dark bg-opacity-80 rounded-3 p-2.5 hover-elevate cursor-pointer shadow-sm position-relative text-white" onclick="addToCart({{ p.id }}, '{{ p.name|escapejs }}', {{ p.selling_price|default:0 }}, {{ p.gst_percent|default:0 }}, {{ p.stock_quantity|default:0 }}, '{{ p.sku|escapejs }}')">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <span class="badge bg-warning bg-opacity-20 text-warning font-monospace" style="font-size: 0.68rem; border: 1px solid rgba(229, 184, 75, 0.3);">{{ p.sku }}</span>
+                                    <span class="badge {% if p.stock_quantity > 5 %}bg-success{% else %}bg-danger{% endif %} bg-opacity-20 text-white" style="font-size: 0.65rem;">
+                                        Stock: {{ p.stock_quantity }}
+                                    </span>
+                                </div>
+                                <h6 class="fw-bold text-white mb-1 text-truncate" title="{{ p.name }}" style="font-size: 0.88rem;">{{ p.name }}</h6>
+                                <div class="d-flex justify-content-between align-items-center mt-auto pt-1">
+                                    <span class="fw-extrabold text-warning fs-6">₹ {{ p.selling_price }}</span>
+                                    <button class="btn btn-sm btn-warning text-dark font-sans fw-bold rounded-2 px-2 py-0.5" style="font-size: 0.75rem;">
+                                        <i class="fa-solid fa-plus"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center py-5 text-white-50">
+                            <i class="fa-solid fa-box-open fs-1 text-secondary mb-2"></i>
+                            <h6>No active products found in catalog.</h6>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Current Billing Cart Terminal -->
+        <div class="col-lg-5 col-xl-4">
+            <div class="card border-0 shadow-lg rounded-4 bg-dark bg-opacity-70 backdrop-blur p-3.5 h-100 d-flex flex-column text-white border-start border-4 border-emerald" style="border-color: #10b981 !important;">
+                
+                <!-- Cart Header & Clear Button -->
+                <div class="d-flex align-items-center justify-content-between mb-2.5 pb-2 border-bottom border-secondary border-opacity-20">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping fs-5 text-emerald" style="color: #34d399;"></i>
+                        <h5 class="fw-bold mb-0 text-white font-heading">Current Bill</h5>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-2.5 py-1" onclick="clearCart()" title="Clear Cart (Esc)">
+                        <i class="fa-solid fa-trash-can me-1"></i> Clear
+                    </button>
+                </div>
+
+                <!-- Customer Selection -->
+                <div class="mb-3">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="text" id="cust_name_input" class="form-control form-control-sm bg-dark border-secondary border-opacity-40 text-white" placeholder="Customer Name (Optional)">
+                        </div>
+                        <div class="col-6">
+                            <input type="tel" id="cust_phone_input" class="form-control form-control-sm bg-dark border-secondary border-opacity-40 text-white" placeholder="Phone Number (WhatsApp)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cart Items List Table -->
+                <div class="cart-items-container flex-grow-1 custom-scroll mb-3" style="max-height: 280px; overflow-y: auto;">
+                    <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                        <thead>
+                            <tr class="text-white-50 small text-uppercase">
+                                <th>Item</th>
+                                <th style="width: 85px;">Qty</th>
+                                <th class="text-end">Total</th>
+                                <th style="width: 30px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart_tbody">
+                            <tr id="empty_cart_row">
+                                <td colspan="4" class="text-center py-4 text-white-50">
+                                    <i class="fa-solid fa-basket-shopping fs-3 opacity-50 mb-1"></i>
+                                    <div class="small">Cart is empty. Click a product or scan barcode.</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Total Summary & Payment Mode -->
+                <div class="pt-3 border-top border-secondary border-opacity-25 mt-auto">
+                    <div class="d-flex justify-content-between mb-1.5 small text-white-50">
+                        <span>Subtotal:</span>
+                        <span class="fw-bold text-white" id="cart_subtotal_text">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1.5 small text-white-50">
+                        <span>GST Tax Total:</span>
+                        <span class="fw-bold text-white" id="cart_gst_text">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2.5 align-items-center">
+                        <span class="fw-extrabold text-uppercase text-emerald" style="color: #34d399;">GRAND TOTAL:</span>
+                        <h3 class="fw-extrabold text-warning mb-0" id="cart_grand_total_text">₹ 0.00</h3>
+                    </div>
+
+                    <!-- Payment Mode Pills -->
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 fw-bold mb-1">Payment Method</label>
+                        <div class="btn-group w-100" role="group" id="payment_mode_group">
+                            <input type="radio" class="btn-check" name="payment_mode" id="pm_cash" value="CASH" checked>
+                            <label class="btn btn-outline-warning btn-sm fw-bold" for="pm_cash"><i class="fa-solid fa-money-bill-wave me-1"></i> Cash</label>
+
+                            <input type="radio" class="btn-check" name="payment_mode" id="pm_upi" value="UPI">
+                            <label class="btn btn-outline-warning btn-sm fw-bold" for="pm_upi"><i class="fa-solid fa-qrcode me-1"></i> UPI / GPay</label>
+
+                            <input type="radio" class="btn-check" name="payment_mode" id="pm_card" value="CARD">
+                            <label class="btn btn-outline-warning btn-sm fw-bold" for="pm_card"><i class="fa-solid fa-credit-card me-1"></i> Card</label>
+
+                            <input type="radio" class="btn-check" name="payment_mode" id="pm_khata" value="KHATA">
+                            <label class="btn btn-outline-danger btn-sm fw-bold" for="pm_khata"><i class="fa-solid fa-book-bookmark me-1"></i> Khata</label>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Submit Button -->
+                    <button class="btn btn-emerald text-dark w-100 py-3 rounded-3 fw-extrabold fs-5 shadow-lg d-flex align-items-center justify-content-center gap-2" id="checkout_btn" onclick="processCheckout()" style="background: linear-gradient(135deg, #34d399 0%, #10b981 100%);">
+                        <i class="fa-solid fa-circle-check fs-4"></i> Complete Checkout (F8)
+                    </button>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<!-- React Components Scripts -->
-<script type="text/babel" src="{% static 'js/react_components/PosBillingApp.jsx' %}"></script>
+<!-- Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white rounded-4 border border-secondary border-opacity-30">
+            <div class="modal-header border-bottom border-secondary border-opacity-20">
+                <h5 class="modal-header-title fw-bold text-warning mb-0"><i class="fa-solid fa-receipt me-2"></i> Bill Paid Successfully!</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4" id="receipt_modal_body">
+                <i class="fa-solid fa-circle-check text-success display-3 mb-3"></i>
+                <h4 class="fw-bold text-white mb-1" id="receipt_inv_num">SGH-INV-XXXX</h4>
+                <p class="text-white-50 mb-3" id="receipt_inv_summary">Total Amount Paid: ₹ 0.00</p>
 
-<script type="text/babel">
-    const initialProducts = [
-        {% for p in products %}
-        {
-            id: {{ p.id }},
-            name: "{{ p.name|escapejs }}",
-            sku: "{{ p.sku|escapejs }}",
-            barcode: "{{ p.barcode|default:''|escapejs }}",
-            selling_price: {{ p.selling_price|default:0 }},
-            gst_percent: {{ p.gst_percent|default:0 }},
-            stock_quantity: {{ p.stock_quantity|default:0 }},
-            category_id: "{{ p.category_id|default:'' }}",
-            unit: "{{ p.unit|default:'Pcs'|escapejs }}"
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ];
+                <div class="d-flex justify-content-center gap-2">
+                    <a id="whatsapp_receipt_btn" href="#" target="_blank" class="btn btn-success fw-bold rounded-pill px-3 py-2">
+                        <i class="fa-brands fa-whatsapp me-1"></i> Share WhatsApp Receipt
+                    </a>
+                    <button type="button" class="btn btn-outline-warning fw-bold rounded-pill px-3 py-2" onclick="window.print()">
+                        <i class="fa-solid fa-print me-1"></i> Print Bill
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    const initialCategories = [
-        {% for c in categories %}
-        { id: "{{ c.id }}", name: "{{ c.name|escapejs }}" }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ];
+<script>
+    let posCart = [];
 
-    const rootElement = document.getElementById('react-pos-root');
-    if (rootElement) {
-        const root = ReactDOM.createRoot(rootElement);
-        root.render(
-            <PosBillingApp 
-                initialProducts={initialProducts} 
-                initialCategories={initialCategories} 
-            />
-        );
+    // Filter Products Search Function
+    document.getElementById('pos_search_input').addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const catFilter = document.getElementById('pos_category_filter').value;
+        const items = document.querySelectorAll('.product-card-item');
+
+        items.forEach(el => {
+            const cat = el.getAttribute('data-category');
+            const searchData = el.getAttribute('data-search');
+            const matchCat = !catFilter || cat === catFilter;
+            const matchQuery = !query || searchData.includes(query);
+
+            if (matchCat && matchQuery) {
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    });
+
+    document.getElementById('pos_category_filter').addEventListener('change', function() {
+        document.getElementById('pos_search_input').dispatchEvent(new Event('input'));
+    });
+
+    // Keyboard Shortcuts (F2: Focus Search, F8: Checkout, Esc: Clear)
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'F2') {
+            e.preventDefault();
+            document.getElementById('pos_search_input').focus();
+        } else if (e.key === 'F8') {
+            e.preventDefault();
+            processCheckout();
+        } else if (e.key === 'Escape') {
+            clearCart();
+        }
+    });
+
+    // Add Product to Cart
+    function addToCart(id, name, price, gst, maxStock, sku) {
+        let existing = posCart.find(i => i.id === id);
+        if (existing) {
+            if (existing.qty >= maxStock) {
+                alert(`Stock limit reached for ${name}`);
+                return;
+            }
+            existing.qty += 1;
+        } else {
+            posCart.push({ id, name, price, gst, qty: 1, maxStock, sku });
+        }
+        renderCart();
+    }
+
+    // Update Quantity
+    function updateQty(id, delta) {
+        let item = posCart.find(i => i.id === id);
+        if (!item) return;
+
+        item.qty += delta;
+        if (item.qty <= 0) {
+            posCart = posCart.filter(i => i.id !== id);
+        } else if (item.qty > item.maxStock) {
+            alert(`Stock limit reached for ${item.name}`);
+            item.qty = item.maxStock;
+        }
+        renderCart();
+    }
+
+    // Remove Item
+    function removeItem(id) {
+        posCart = posCart.filter(i => i.id !== id);
+        renderCart();
+    }
+
+    // Clear Cart
+    function clearCart() {
+        posCart = [];
+        renderCart();
+    }
+
+    // Render Cart HTML
+    function renderCart() {
+        const tbody = document.getElementById('cart_tbody');
+        if (posCart.length === 0) {
+            tbody.innerHTML = `
+                <tr id="empty_cart_row">
+                    <td colspan="4" class="text-center py-4 text-white-50">
+                        <i class="fa-solid fa-basket-shopping fs-3 opacity-50 mb-1"></i>
+                        <div class="small">Cart is empty. Click a product or scan barcode.</div>
+                    </td>
+                </tr>`;
+            document.getElementById('cart_subtotal_text').innerText = '₹ 0.00';
+            document.getElementById('cart_gst_text').innerText = '₹ 0.00';
+            document.getElementById('cart_grand_total_text').innerText = '₹ 0.00';
+            return;
+        }
+
+        let html = '';
+        let subtotal = 0;
+        let gstTotal = 0;
+
+        posCart.forEach(item => {
+            const itemSubtotal = item.price * item.qty;
+            const itemGst = (itemSubtotal * item.gst) / 100;
+            const itemTotal = itemSubtotal + itemGst;
+
+            subtotal += itemSubtotal;
+            gstTotal += itemGst;
+
+            html += `
+                <tr>
+                    <td class="ps-1">
+                        <div class="fw-bold text-white text-truncate" style="max-width: 130px;">${item.name}</div>
+                        <div class="small text-white-50">₹ ${item.price}</div>
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <button class="btn btn-outline-secondary text-white btn-sm px-1.5 py-0" onclick="updateQty(${item.id}, -1)">-</button>
+                            <span class="form-control text-center bg-dark text-white fw-bold px-1 py-0" style="font-size: 0.85rem;">${item.qty}</span>
+                            <button class="btn btn-outline-secondary text-white btn-sm px-1.5 py-0" onclick="updateQty(${item.id}, 1)">+</button>
+                        </div>
+                    </td>
+                    <td class="text-end fw-bold text-warning">₹ ${itemTotal.toFixed(2)}</td>
+                    <td class="pe-1 text-center">
+                        <button class="btn btn-link text-danger btn-sm p-0" onclick="removeItem(${item.id})"><i class="fa-solid fa-xmark"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+        const grandTotal = subtotal + gstTotal;
+
+        document.getElementById('cart_subtotal_text').innerText = `₹ ${subtotal.toFixed(2)}`;
+        document.getElementById('cart_gst_text').innerText = `₹ ${gstTotal.toFixed(2)}`;
+        document.getElementById('cart_grand_total_text').innerText = `₹ ${grandTotal.toFixed(2)}`;
+    }
+
+    // Process Checkout API Call
+    function processCheckout() {
+        if (posCart.length === 0) {
+            alert('Cart is empty. Add products before completing checkout.');
+            return;
+        }
+
+        const custName = document.getElementById('cust_name_input').value.trim();
+        const custPhone = document.getElementById('cust_phone_input').value.trim();
+        const paymentMode = document.querySelector('input[name="payment_mode"]:checked').value;
+
+        const payload = {
+            items: posCart,
+            customer_name: custName,
+            customer_phone: custPhone,
+            payment_mode: paymentMode,
+            discount_amount: 0
+        };
+
+        const btn = document.getElementById('checkout_btn');
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Processing Checkout...`;
+
+        fetch('{% url "billing:checkout_api" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-circle-check fs-4"></i> Complete Checkout (F8)`;
+
+            if (data.status === 'success') {
+                document.getElementById('receipt_inv_num').innerText = data.invoice_number;
+                document.getElementById('receipt_inv_summary').innerText = `Total Amount Paid: ₹ ${data.total_amount}`;
+
+                if (data.whatsapp_url) {
+                    document.getElementById('whatsapp_receipt_btn').href = data.whatsapp_url;
+                }
+
+                const modal = new bootstrap.Modal(document.getElementById('receiptModal'));
+                modal.show();
+
+                clearCart();
+                document.getElementById('cust_name_input').value = '';
+                document.getElementById('cust_phone_input').value = '';
+            } else {
+                alert(data.message || 'Checkout failed.');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-circle-check fs-4"></i> Complete Checkout (F8)`;
+            alert('Checkout error occurred: ' + err);
+        });
     }
 </script>
 {% endblock %}

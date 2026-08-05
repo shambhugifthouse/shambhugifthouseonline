@@ -138,9 +138,6 @@
                     <a href="{% url 'dashboard:dashboard' %}" class="nav-link {% if request.resolver_match.namespace == 'dashboard' or request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                         <i class="fa-solid fa-chart-pie w-20"></i> Dashboard
                     </a>
-                    <a href="{% url 'billing:pos' %}" class="nav-link {% if request.resolver_match.namespace == 'billing' %}active{% endif %}">
-                        <i class="fa-solid fa-cash-register w-20 text-warning"></i> POS Billing
-                    </a>
                     <a href="{% url 'products:list' %}" class="nav-link {% if request.resolver_match.namespace == 'products' %}active{% endif %}">
                         <i class="fa-solid fa-boxes-stacked w-20"></i> Products Catalog
                     </a>

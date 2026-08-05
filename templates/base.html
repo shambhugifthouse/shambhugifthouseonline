@@ -162,8 +162,9 @@
                     <a href="{% url 'personal_services:dashboard' %}" class="nav-link {% if request.resolver_match.namespace == 'personal_services' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                         <i class="fa-solid fa-wallet w-20 text-info"></i> Personal Services
                     </a>
-                    <a href="{% url 'personal_services:profit_report' %}" class="nav-link {% if request.resolver_match.namespace == 'personal_services' and request.resolver_match.url_name == 'profit_report' %}active{% endif %}">
-                        <i class="fa-solid fa-file-pdf w-20 text-warning"></i> Profit & PDF Report
+                    <a href="{% url 'personal_services:profit_report' %}" class="nav-link {% if request.resolver_match.namespace == 'personal_services' and request.resolver_match.url_name == 'profit_report' %}active{% endif %}" style="background: rgba(229, 184, 75, 0.12); border: 1px solid rgba(229, 184, 75, 0.3);">
+                        <i class="fa-solid fa-file-pdf w-20 text-warning"></i> <span class="text-warning">Overall Profit & PDF</span>
+                        <span class="badge bg-warning text-dark ms-auto" style="font-size: 0.65rem; font-weight: 800;">NEW</span>
                     </a>
                     <a href="{% url 'customers:list' %}" class="nav-link {% if request.resolver_match.namespace == 'customers' %}active{% endif %}">
                         <i class="fa-solid fa-users w-20"></i> Customers & Khata

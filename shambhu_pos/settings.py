@@ -256,9 +256,20 @@ LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/auth/login/'
 
+import socket
+
+def _resolve_ipv4_smtp_host():
+    try:
+        infos = socket.getaddrinfo('smtp.gmail.com', 587, socket.AF_INET, socket.SOCK_STREAM)
+        if infos:
+            return infos[0][4][0]
+    except Exception:
+        pass
+    return 'smtp.gmail.com'
+
 # Email SMTP Configuration (Password Reset Links & Notifications)
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST = _resolve_ipv4_smtp_host()
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
 EMAIL_HOST_USER = 'shambhugifthouseonline@gmail.com'

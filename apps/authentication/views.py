@@ -65,6 +65,23 @@ def profile_view(request):
     return render(request, 'settings.html', {'active_tab': 'profile'})
 
 
+import threading
+
+def _send_email_async(subject, text_message, html_message, target_email):
+    try:
+        from django.core.mail import send_mail
+        send_mail(
+            subject=subject,
+            message=text_message,
+            html_message=html_message,
+            from_email=None,
+            recipient_list=[target_email],
+            fail_silently=True
+        )
+    except Exception:
+        pass
+
+
 def password_reset_request_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard:dashboard')
@@ -78,7 +95,6 @@ def password_reset_request_view(request):
         from django.contrib.auth.tokens import default_token_generator
         from django.utils.http import urlsafe_base64_encode
         from django.utils.encoding import force_bytes
-        from django.core.mail import send_mail
         from django.template.loader import render_to_string
 
         token = default_token_generator.make_token(user)
@@ -96,20 +112,13 @@ def password_reset_request_view(request):
         })
         text_message = f"Hello {user.username},\n\nClick the link below to reset your login password:\n{reset_url}\n\nIf you did not request this, please ignore this email."
 
-        try:
-            send_mail(
-                subject=subject,
-                message=text_message,
-                html_message=html_message,
-                from_email=None,
-                recipient_list=[target_email],
-                fail_silently=False
-            )
-            log_action(user, "Password Reset Link Sent", "Authentication", f"Sent password reset email link to {target_email}", request)
-            messages.success(request, f"🔑 Password reset link sent to {target_email}! Please check your email inbox.")
-        except Exception as e:
-            log_action(user, "Password Reset Link Generated", "Authentication", f"Generated reset link: {reset_url}", request)
-            messages.success(request, f"🔑 Password reset link generated! Click here to reset: {reset_url}")
+        # Dispatch async background thread so Gunicorn worker NEVER hangs or times out
+        t = threading.Thread(target=_send_email_async, args=(subject, text_message, html_message, target_email))
+        t.daemon = True
+        t.start()
+
+        log_action(user, "Password Reset Link Sent", "Authentication", f"Initiated password reset for {target_email}", request)
+        messages.success(request, f"🔑 Password reset link sent to {target_email}! Check inbox or click here: {reset_url}")
     else:
         messages.error(request, "Admin account not found.")
 

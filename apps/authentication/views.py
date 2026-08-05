@@ -83,9 +83,8 @@ def password_reset_request_view(request):
 
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_url = request.build_absolute_uri(
-            f"/auth/reset-password/{uid}/{token}/"
-        )
+        host_domain = request.get_host()
+        reset_url = f"https://{host_domain}/auth/reset-password/{uid}/{token}/"
 
         target_email = "thepranit.19@gmail.com"
 

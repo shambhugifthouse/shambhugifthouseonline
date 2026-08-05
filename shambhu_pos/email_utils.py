@@ -50,27 +50,30 @@ def send_email_async(
                 'X-Auto-Response-Suppress': 'OOF, AutoReply',
             }
 
-            # 4. Construct EmailMultiAlternatives object
-            msg = EmailMultiAlternatives(
-                subject=clean_subject,
-                body=text_content,
-                from_email=sender,
-                to=recipient_list,
-                headers=headers,
-            )
-            msg.attach_alternative(html_content, "text/html")
+            # 4. Dispatch to each recipient individually for 100% fault-tolerant delivery
+            for recipient in recipient_list:
+                try:
+                    msg = EmailMultiAlternatives(
+                        subject=clean_subject,
+                        body=text_content,
+                        from_email=sender,
+                        to=[recipient],
+                        headers=headers,
+                    )
+                    msg.attach_alternative(html_content, "text/html")
 
-            # Attach files if provided (e.g. PDF Financial Reports)
-            if attachments:
-                for attachment in attachments:
-                    filename, content_bytes, mimetype = attachment
-                    msg.attach(filename, content_bytes, mimetype)
+                    # Attach files if provided (e.g. PDF Financial Reports)
+                    if attachments:
+                        for attachment in attachments:
+                            filename, content_bytes, mimetype = attachment
+                            msg.attach(filename, content_bytes, mimetype)
 
-            # 5. Send email via SMTP
-            sent_count = msg.send(fail_silently=False)
-            logger.info("Email '%s' sent successfully to %s (sent count: %d)", clean_subject, recipient_list, sent_count)
-        except Exception as exc:
-            logger.error("Failed to send email '%s' to %s: %s", clean_subject, recipient_list, str(exc), exc_info=True)
+                    sent_count = msg.send(fail_silently=False)
+                    logger.info("Email '%s' sent successfully to %s", clean_subject, recipient)
+                except Exception as exc:
+                    logger.error("Failed to send email '%s' to %s: %s", clean_subject, recipient, str(exc), exc_info=True)
+        except Exception as main_exc:
+            logger.error("Error in email worker process: %s", str(main_exc), exc_info=True)
 
     # Spawn daemon thread for instant non-blocking return
     thread = threading.Thread(target=_worker, daemon=True)

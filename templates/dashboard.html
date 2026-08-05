@@ -14,11 +14,11 @@
         </div>
 
         <div class="d-flex gap-2 flex-wrap">
-            <a href="{% url 'billing:pos' %}" class="btn btn-warning rounded-pill px-4 fw-bold text-dark shadow-sm d-inline-flex align-items-center gap-1.5">
-                <i class="fa-solid fa-cash-register"></i> POS Counter Terminal
-            </a>
-            <a href="{% url 'products:list' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5" style="background: var(--primary-gradient); border: none;">
+            <a href="{% url 'products:list' %}" class="btn btn-warning rounded-pill px-4 fw-bold text-dark shadow-sm d-inline-flex align-items-center gap-1.5">
                 <i class="fa-solid fa-plus"></i> Add Product
+            </a>
+            <a href="{% url 'services:recharge' %}" class="btn btn-info text-white rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5">
+                <i class="fa-solid fa-mobile-screen-button"></i> Mobile Recharge
             </a>
             <a href="{% url 'inventory:list' %}" class="btn btn-light rounded-pill px-3.5 fw-bold border d-inline-flex align-items-center gap-1.5">
                 <i class="fa-solid fa-boxes-packing"></i> Stock Adjustments
@@ -41,7 +41,7 @@
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-header bg-white border-0 py-3.5 px-4 d-flex align-items-center justify-content-between">
                 <h6 class="fw-bold mb-0 font-heading"><i class="fa-solid fa-receipt me-2 text-primary"></i> Recent Invoices</h6>
-                <a href="{% url 'billing:pos' %}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold border">Open POS Terminal</a>
+                <a href="{% url 'reports:reports' %}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold border">View All Reports</a>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">

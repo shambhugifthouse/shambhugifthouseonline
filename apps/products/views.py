@@ -5,12 +5,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
-from .models import Product, Category
+from .models import Product, Category, generate_unique_sku
 from apps.services.models import ServiceItem
 from apps.inventory.models import StockSpending
 from apps.authentication.models import log_action
 
 from django.core.cache import cache
+
+def generate_sku_api(request):
+    """
+    API endpoint returning a newly suggested unique SGH-XXXXXX item code.
+    """
+    code = generate_unique_sku()
+    return JsonResponse({'status': 'success', 'sku': code})
 
 def public_store_view(request):
     search_query = request.GET.get('q', '').strip()

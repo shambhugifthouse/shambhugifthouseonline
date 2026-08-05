@@ -6,4 +6,5 @@ urlpatterns = [
     path('category/', views.category_list_view, name='category_save'),
     path('export/csv/', views.export_products_csv, name='export_csv'),
     path('api/search/', views.product_search_api, name='search_api'),
+    path('api/generate-sku/', views.generate_sku_api, name='generate_sku_api'),
 ]

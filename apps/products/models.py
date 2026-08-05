@@ -22,6 +22,16 @@ class Category(models.Model):
         return self.name
 
 
+import random
+
+def generate_unique_sku():
+    """Generates a unique SKU formatted as SGH-XXXXXX (e.g. SGH-100001)."""
+    while True:
+        code = f"SGH-{random.randint(100000, 999999)}"
+        if not Product.objects.filter(sku=code).exists():
+            return code
+
+
 class Product(models.Model):
     GST_CHOICES = (
         (Decimal('0.00'), '0%'),
@@ -63,6 +73,16 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        if not self.sku or not self.sku.strip():
+            self.sku = generate_unique_sku()
+        else:
+            clean_sku = self.sku.strip().upper()
+            if not clean_sku.startswith('SGH-'):
+                clean_sku = f"SGH-{clean_sku}"
+            self.sku = clean_sku
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.sku})"

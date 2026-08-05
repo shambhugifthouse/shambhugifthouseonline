@@ -265,10 +265,15 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold small">SKU / Item Code *</label>
-                                    <input type="text" name="sku" class="form-control" placeholder="e.g. SGH-TOY-007" required>
+                                    <div class="input-group">
+                                        <input type="text" id="addProductModalSKU" name="sku" class="form-control fw-bold text-uppercase" placeholder="e.g. SGH-100001" required>
+                                        <button type="button" class="btn btn-warning text-dark font-sans fw-bold px-3" onclick="autoSuggestSKU()" title="Generate next unique SKU starting with SGH-">
+                                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Auto Suggest
+                                        </button>
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.725rem;">Always formatted with prefix <strong>SGH-</strong> (e.g. SGH-849201)</small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold small">Barcode (Optional)</label>
@@ -489,6 +494,23 @@ function filterQuickProducts() {
             el.style.display = 'none';
         }
     });
+function autoSuggestSKU() {
+    const skuInput = document.getElementById('addProductModalSKU') || document.querySelector('#addProductModal input[name="sku"]');
+    if (!skuInput) return;
+
+    // Instant local fallback: SGH- + 6 digit random number
+    const randCode = 'SGH-' + Math.floor(100000 + Math.random() * 900000);
+    skuInput.value = randCode;
+
+    // Fetch unique code from API
+    fetch('/products/api/generate-sku/')
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success' && data.sku) {
+                skuInput.value = data.sku;
+            }
+        })
+        .catch(err => console.log('SKU API Fallback active:', err));
 }
 </script>
 {% endblock %}

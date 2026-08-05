@@ -45,7 +45,6 @@ def send_email_async(
             headers = {
                 'Reply-To': reply_to_addresses[0],
                 'X-Auto-Response-Suppress': 'OOF, AutoReply',
-                'Precedence': 'bulk',
             }
 
             # 4. Construct EmailMultiAlternatives object

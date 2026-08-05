@@ -1,8 +1,10 @@
 import logging
 import threading
+import time
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
@@ -13,11 +15,12 @@ def send_email_async(
     context: dict,
     recipient_list: list,
     from_email: str = None,
-    reply_to: list = None
+    reply_to: list = None,
+    attachments: list = None  # List of tuples: (filename, content_bytes, mimetype)
 ):
     """
-    Spawns a non-blocking background daemon thread to render HTML/text templates
-    and dispatch email with anti-spam deliverability headers.
+    Spawns a non-blocking background daemon thread to render HTML/text templates,
+    attach files (PDFs, receipts), and dispatch email with deliverability headers.
     """
     sender = from_email or getattr(settings, 'DEFAULT_FROM_EMAIL', '')
     host_user = getattr(settings, 'EMAIL_HOST_USER', '')
@@ -41,7 +44,7 @@ def send_email_async(
             # 2. Extract reply-to address
             reply_to_addresses = reply_to or [host_user]
 
-            # 3. Anti-spam & deliverability headers
+            # 3. Deliverability headers
             headers = {
                 'Reply-To': reply_to_addresses[0],
                 'X-Auto-Response-Suppress': 'OOF, AutoReply',
@@ -57,6 +60,12 @@ def send_email_async(
             )
             msg.attach_alternative(html_content, "text/html")
 
+            # Attach files if provided (e.g. PDF Financial Reports)
+            if attachments:
+                for attachment in attachments:
+                    filename, content_bytes, mimetype = attachment
+                    msg.attach(filename, content_bytes, mimetype)
+
             # 5. Send email via SMTP
             sent_count = msg.send(fail_silently=False)
             logger.info("Email '%s' sent successfully to %s (sent count: %d)", clean_subject, recipient_list, sent_count)
@@ -67,8 +76,6 @@ def send_email_async(
     thread = threading.Thread(target=_worker, daemon=True)
     thread.start()
 
-
-import time
 
 def send_password_reset_email(user, reset_url: str):
     """
@@ -88,4 +95,30 @@ def send_password_reset_email(user, reset_url: str):
         template_name='password_reset_email.html',
         context=context,
         recipient_list=[target_email],
+    )
+
+
+def send_profit_report_pdf_email(pdf_bytes: bytes, recipient_list=None):
+    """
+    Helper utility to dispatch Overall Profit & Personal Services PDF Report to shambhugifthouse1@gmail.com.
+    """
+    if not recipient_list:
+        recipient_list = ['shambhugifthouse1@gmail.com', 'thepranit.19@gmail.com']
+
+    ref_id = int(time.time()) % 100000
+    subject = f"Overall Profit & Personal Services PDF Report - Shambhu Gift House [Ref #{ref_id}]"
+    now_str = timezone.now().strftime("%B %d, %Y - %I:%M %p")
+    filename = f"Shambhu_Gift_House_Profit_Report_{timezone.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+
+    context = {
+        'site_name': 'Shambhu Gift House POS',
+        'generated_at': now_str,
+    }
+
+    send_email_async(
+        subject=subject,
+        template_name='pdf_report_email.html',
+        context=context,
+        recipient_list=recipient_list,
+        attachments=[(filename, pdf_bytes, 'application/pdf')],
     )

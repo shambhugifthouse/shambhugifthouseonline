@@ -180,3 +180,142 @@ def pay_emi_installment(request, pk):
         messages.success(request, f"Recorded installment #{emi.paid_installments} for {emi.title} (₹{emi.monthly_emi})!")
 
     return redirect('personal_services:dashboard')
+
+
+from django.http import HttpResponse
+from apps.billing.models import Invoice
+from apps.services.models import RechargeTransaction, OtherServiceTransaction
+from shambhu_pos.pdf_utils import generate_financial_pdf_report
+from shambhu_pos.email_utils import send_profit_report_pdf_email
+
+
+def profit_report_view(request):
+    """
+    Renders the Overall Profit & Personal Services Financial Report Dashboard Page.
+    """
+    today = timezone.now().date()
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    inv_qs = Invoice.objects.all()
+    rech_qs = RechargeTransaction.objects.filter(status='SUCCESS')
+    oth_qs = OtherServiceTransaction.objects.all()
+    exp_qs = Expense.objects.select_related('category').all()
+
+    if start_date_str:
+        try:
+            sd = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            inv_qs = inv_qs.filter(created_at__date__gte=sd)
+            rech_qs = rech_qs.filter(created_at__date__gte=sd)
+            oth_qs = oth_qs.filter(created_at__date__gte=sd)
+            exp_qs = exp_qs.filter(expense_date__gte=sd)
+        except ValueError:
+            pass
+
+    if end_date_str:
+        try:
+            ed = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            inv_qs = inv_qs.filter(created_at__date__lte=ed)
+            rech_qs = rech_qs.filter(created_at__date__lte=ed)
+            oth_qs = oth_qs.filter(created_at__date__lte=ed)
+            exp_qs = exp_qs.filter(expense_date__lte=ed)
+        except ValueError:
+            pass
+
+    total_pos_sales = inv_qs.aggregate(t=Sum('grand_total'))['t'] or Decimal('0.00')
+    total_recharge_comm = rech_qs.aggregate(t=Sum('commission'))['t'] or Decimal('0.00')
+    total_other_services_charge = oth_qs.aggregate(t=Sum('service_charge'))['t'] or Decimal('0.00')
+    total_gross_revenue = total_pos_sales + total_recharge_comm + total_other_services_charge
+
+    total_expenses = exp_qs.aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
+
+    emis = EMITracker.objects.all()
+    active_emis = emis.filter(status='ACTIVE')
+    total_emi_paid = EMIPayment.objects.aggregate(t=Sum('amount_paid'))['t'] or Decimal('0.00')
+    monthly_emi_commitment = active_emis.aggregate(t=Sum('monthly_emi'))['t'] or Decimal('0.00')
+
+    net_overall_profit = total_gross_revenue - total_expenses - total_emi_paid
+
+    categories = ExpenseCategory.objects.all()
+    category_summary = []
+    for cat in categories:
+        amt = exp_qs.filter(category=cat).aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
+        cnt = exp_qs.filter(category=cat).count()
+        if cnt > 0:
+            category_summary.append({'category': cat, 'amount': amt, 'count': cnt})
+
+    context = {
+        'total_pos_sales': total_pos_sales,
+        'total_recharge_comm': total_recharge_comm,
+        'total_other_services_charge': total_other_services_charge,
+        'total_gross_revenue': total_gross_revenue,
+        'total_expenses': total_expenses,
+        'total_emi_paid': total_emi_paid,
+        'monthly_emi_commitment': monthly_emi_commitment,
+        'net_overall_profit': net_overall_profit,
+        'category_summary': category_summary,
+        'active_emis': active_emis,
+        'recent_expenses': exp_qs[:20],
+        'start_date': start_date_str or '',
+        'end_date': end_date_str or '',
+        'today': today,
+    }
+    return render(request, 'profit_report.html', context)
+
+
+def download_profit_pdf(request):
+    """
+    Generates and downloads the Overall Profit & Personal Services PDF Report.
+    """
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    sd = None
+    ed = None
+    if start_date:
+        try:
+            sd = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            ed = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+
+    pdf_bytes = generate_financial_pdf_report(start_date=sd, end_date=ed)
+    filename = f"Shambhu_Gift_House_Profit_Report_{timezone.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+def send_profit_pdf_email_view(request):
+    """
+    Generates PDF report and sends it directly via email to shambhugifthouse1@gmail.com.
+    """
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    sd = None
+    ed = None
+    if start_date:
+        try:
+            sd = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            ed = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+
+    pdf_bytes = generate_financial_pdf_report(start_date=sd, end_date=ed)
+
+    recipient = "shambhugifthouse1@gmail.com"
+    send_profit_report_pdf_email(pdf_bytes, recipient_list=[recipient, "thepranit.19@gmail.com"])
+
+    messages.success(request, f"📧 Overall Profit & Personal Services PDF Report sent successfully to {recipient}!")
+    return redirect('personal_services:profit_report')
+

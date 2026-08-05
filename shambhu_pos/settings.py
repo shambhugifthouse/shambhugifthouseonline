@@ -258,18 +258,18 @@ LOGOUT_REDIRECT_URL = '/auth/login/'
 
 import socket
 
-def _resolve_ipv4_smtp_host():
-    try:
-        infos = socket.getaddrinfo('smtp.gmail.com', 587, socket.AF_INET, socket.SOCK_STREAM)
-        if infos:
-            return infos[0][4][0]
-    except Exception:
-        pass
-    return 'smtp.gmail.com'
+# Force socket.getaddrinfo to resolve IPv4 (AF_INET) for smtp.gmail.com to prevent Render IPv6 unreachability
+_orig_getaddrinfo = socket.getaddrinfo
+def _ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    if host == 'smtp.gmail.com':
+        family = socket.AF_INET
+    return _orig_getaddrinfo(host, port, family, type, proto, flags)
+
+socket.getaddrinfo = _ipv4_getaddrinfo
 
 # Email SMTP Configuration (Password Reset Links & Notifications)
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = _resolve_ipv4_smtp_host()
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
 EMAIL_HOST_USER = 'shambhugifthouseonline@gmail.com'

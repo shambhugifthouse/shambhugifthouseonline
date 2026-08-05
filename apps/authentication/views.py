@@ -39,11 +39,44 @@ def logout_view(request):
     return redirect('auth:login')
 
 
+from .models import UserProfile, BusinessProfile, AuditLog, log_action
+
 @login_required
 def profile_view(request):
+    shop = BusinessProfile.objects.first()
+    if not shop:
+        shop = BusinessProfile.objects.create()
+
     if request.method == 'POST':
         action = request.POST.get('action')
-        if action == 'change_password':
+        if action == 'update_profile':
+            user = request.user
+            user.first_name = request.POST.get('first_name', '').strip()
+            user.last_name = request.POST.get('last_name', '').strip()
+            new_email = request.POST.get('email', '').strip()
+            if new_email:
+                user.email = new_email
+            user.save()
+
+            if hasattr(user, 'profile'):
+                user.profile.phone = request.POST.get('user_phone', '').strip()
+                user.profile.save()
+
+            # Update Business Profile
+            shop.shop_name = request.POST.get('shop_name', '').strip() or shop.shop_name
+            shop.tagline = request.POST.get('tagline', '').strip()
+            shop.owner_name = request.POST.get('owner_name', '').strip()
+            shop.phone = request.POST.get('phone', '').strip()
+            shop.email = request.POST.get('business_email', '').strip() or shop.email
+            shop.gstin = request.POST.get('gstin', '').strip()
+            shop.address = request.POST.get('address', '').strip()
+            shop.save()
+
+            log_action(user, "Profile Update", "Authentication", "Updated account & business profile values", request)
+            messages.success(request, "🎉 Account & Business Profile values updated successfully!")
+            return redirect('auth:profile')
+
+        elif action == 'change_password':
             old_pass = request.POST.get('old_password')
             new_pass = request.POST.get('new_password')
             confirm_pass = request.POST.get('confirm_password')
@@ -62,7 +95,7 @@ def profile_view(request):
                 messages.success(request, "Password updated successfully!")
                 return redirect('auth:profile')
 
-    return render(request, 'settings.html', {'active_tab': 'profile'})
+    return render(request, 'settings.html', {'active_tab': 'profile', 'shop': shop})
 
 
 from shambhu_pos.email_utils import send_password_reset_email

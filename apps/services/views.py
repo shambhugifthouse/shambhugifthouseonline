@@ -228,6 +228,13 @@ def recharge_view(request):
             messages.warning(request, f"Recharge log deleted! ₹{amt} restored to {prov_name} balance.")
             return redirect('services:recharge')
 
+        elif action == 'clear_all_recharges':
+            count = RechargeTransaction.objects.count()
+            RechargeTransaction.objects.all().delete()
+            log_action(request.user, "Clear All Recharge Entries", "Recharge", f"Cleared all {count} recharge history entries", request)
+            messages.warning(request, f"Cleared all {count} recharge history entries successfully.")
+            return redirect('services:recharge')
+
     mobile_providers = RechargeProvider.objects.filter(category='MOBILE', is_active=True).order_by('id')
     dth_providers = RechargeProvider.objects.filter(category='DTH', is_active=True).order_by('id')
 
@@ -253,6 +260,7 @@ def recharge_view(request):
     total_commission_today = tx_qs.aggregate(total=Sum('commission'))['total'] or Decimal('0.00')
     cash_recharges = tx_qs.filter(payment_mode='CASH').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
     online_recharges = tx_qs.filter(payment_mode='ONLINE').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    khata_recharges = tx_qs.filter(payment_mode='KHATA').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     previous_customers = []
     seen_numbers = set()
@@ -274,6 +282,7 @@ def recharge_view(request):
         'total_commission_today': total_commission_today,
         'cash_recharges': cash_recharges,
         'online_recharges': online_recharges,
+        'khata_recharges': khata_recharges,
         'previous_customers': previous_customers,
         'search_q': search_q,
         'provider_filter': provider_filter,

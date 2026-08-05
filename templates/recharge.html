@@ -316,7 +316,7 @@
             </div>
 
             <!-- Summary Chips -->
-            <div class="d-flex gap-2 flex-wrap">
+            <div class="d-flex gap-2 flex-wrap align-items-center">
                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill font-monospace fw-bold border">
                     Total: ₹{{ total_recharge_today|floatformat:2 }}
                 </span>
@@ -329,6 +329,19 @@
                 <span class="badge bg-light text-dark px-3 py-2 rounded-pill font-monospace fw-bold border">
                     📱 Online: ₹{{ online_recharges|floatformat:2 }}
                 </span>
+                <span class="badge bg-warning bg-opacity-20 text-dark px-3 py-2 rounded-pill font-monospace fw-bold border border-warning">
+                    📕 Khata: ₹{{ khata_recharges|floatformat:2 }}
+                </span>
+
+                {% if transactions %}
+                <form method="POST" action="{% url 'services:recharge' %}" class="d-inline ms-1" onsubmit="return confirm('⚠️ Are you sure you want to remove ALL recharge entries from history?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="clear_all_recharges">
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-bold" title="Remove all recharge entries from history">
+                        <i class="fa-solid fa-trash-can me-1"></i> Clear All History
+                    </button>
+                </form>
+                {% endif %}
             </div>
         </div>
 
@@ -358,6 +371,7 @@
                     <option value="">All Modes</option>
                     <option value="CASH" {% if mode_filter == 'CASH' %}selected{% endif %}>💵 Cash</option>
                     <option value="ONLINE" {% if mode_filter == 'ONLINE' %}selected{% endif %}>📱 Online</option>
+                    <option value="KHATA" {% if mode_filter == 'KHATA' %}selected{% endif %}>📕 Khata</option>
                 </select>
             </div>
 
@@ -401,6 +415,8 @@
                     <td class="text-center">
                         {% if tx.payment_mode == 'ONLINE' %}
                             <span class="badge bg-primary bg-opacity-10 text-primary border rounded-pill px-2.5 py-1 fw-bold">📱 Online</span>
+                        {% elif tx.payment_mode == 'KHATA' %}
+                            <span class="badge bg-warning bg-opacity-15 text-dark border border-warning border-opacity-50 rounded-pill px-2.5 py-1 fw-bold">📕 Customer Khata</span>
                         {% else %}
                             <span class="badge bg-success bg-opacity-10 text-success border rounded-pill px-2.5 py-1 fw-bold">💵 Cash</span>
                         {% endif %}
@@ -457,7 +473,7 @@
                 <input type="hidden" name="action" value="perform_recharge">
 
                 <div class="modal-body p-4">
-                    <!-- Payment Mode Selection (Cash vs Online) -->
+                    <!-- Payment Mode Selection (Cash vs Online vs Khata) -->
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted text-uppercase">Payment Received Mode</label>
                         <div class="d-flex gap-2">
@@ -469,6 +485,11 @@
                             <input type="radio" class="btn-check" name="payment_mode" id="pm_online" value="ONLINE">
                             <label class="btn btn-outline-primary flex-grow-1 fw-bold py-2 rounded-3" for="pm_online">
                                 📱 Online / UPI
+                            </label>
+
+                            <input type="radio" class="btn-check" name="payment_mode" id="pm_khata" value="KHATA">
+                            <label class="btn btn-outline-warning flex-grow-1 fw-bold py-2 rounded-3 text-dark" for="pm_khata">
+                                📕 Khata (Credit)
                             </label>
                         </div>
                     </div>

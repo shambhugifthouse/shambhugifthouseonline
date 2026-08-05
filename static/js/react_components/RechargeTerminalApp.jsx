@@ -179,7 +179,7 @@ function RechargeTerminalApp() {
               ))}
             </div>
 
-            {/* Payment Mode Choice: Cash vs Online */}
+            {/* Payment Mode Choice: Cash vs Online vs Khata */}
             <div className="mb-3">
               <label className="form-label fw-bold small text-secondary">Payment Received Mode</label>
               <div className="btn-group w-100 p-1 rounded-3 bg-light border" role="group">
@@ -188,7 +188,7 @@ function RechargeTerminalApp() {
                   className={`btn btn-sm py-2 fw-bold rounded-2 ${paymentMode === 'CASH' ? 'btn-success text-white shadow-xs' : 'btn-light text-secondary'}`}
                   onClick={() => setPaymentMode('CASH')}
                 >
-                  💵 Cash Payment
+                  💵 Cash
                 </button>
                 <button
                   type="button"
@@ -196,6 +196,13 @@ function RechargeTerminalApp() {
                   onClick={() => setPaymentMode('ONLINE')}
                 >
                   📱 Online / UPI
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-sm py-2 fw-bold rounded-2 ${paymentMode === 'KHATA' ? 'btn-warning text-dark shadow-xs' : 'btn-light text-secondary'}`}
+                  onClick={() => setPaymentMode('KHATA')}
+                >
+                  📕 Khata Credit
                 </button>
               </div>
             </div>

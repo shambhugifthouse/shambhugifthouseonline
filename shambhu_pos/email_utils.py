@@ -32,9 +32,11 @@ def send_email_async(
 
     def _worker():
         try:
-            # 1. Render HTML template and strip tags for plain-text fallback
+            # 1. Render HTML template and construct clear text fallback containing links
             html_content = render_to_string(template_name, context)
             text_content = strip_tags(html_content)
+            if 'reset_url' in context and context['reset_url'] not in text_content:
+                text_content += f"\n\nDirect Reset Link: {context['reset_url']}"
 
             # 2. Extract reply-to address
             reply_to_addresses = reply_to or [host_user]

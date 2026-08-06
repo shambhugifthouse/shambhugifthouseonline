@@ -113,10 +113,10 @@
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="bg-light text-dark font-sans">
     <div class="d-flex min-vh-100">
         <!-- Sidebar Navigation -->
-        <aside class="sidebar p-3.5 p-3 d-flex flex-column justify-content-between flex-shrink-0">
+        <aside class="sidebar-wrapper bg-dark text-white p-3 d-flex flex-column justify-content-between flex-shrink-0" style="width: 270px; background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);">
             <div>
                 <!-- Brand Header -->
                 <div class="d-flex align-items-center gap-2.5 px-2 py-3 mb-4 border-bottom border-secondary border-opacity-25">
@@ -125,7 +125,7 @@
                     </div>
                     <div>
                         <h6 class="fw-bold mb-0 text-warning font-brand-serif" style="font-size: 1.05rem; letter-spacing: 1px;">SHAMBHU</h6>
-                        <small class="text-white-50 fw-bold" style="font-size: 0.70rem; letter-spacing: 1.5px;">GIFT HOUSE • POS</small>
+                        <small class="text-white-50 fw-bold" style="font-size: 0.70rem; letter-spacing: 1.5px;">GIFT HOUSE • STORE</small>
                     </div>
                 </div>
 
@@ -201,7 +201,7 @@
             <header class="bg-white border-bottom px-4 py-3 d-flex align-items-center justify-content-between shadow-xs">
                 <div>
                     <h5 class="fw-bold mb-0 font-heading">{% block page_title %}Dashboard{% endblock %}</h5>
-                    <small class="text-muted fw-medium">{% block page_subtitle %}Welcome to Shambhu Gift House POS{% endblock %}</small>
+                    <small class="text-muted fw-medium">{% block page_subtitle %}Welcome to Shambhu Gift House{% endblock %}</small>
                 </div>
 
                 <div class="d-flex align-items-center gap-3">

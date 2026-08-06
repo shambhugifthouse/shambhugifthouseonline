@@ -24,29 +24,29 @@
 </div>
 
 <!-- Summary Metrics Row -->
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-4">
     <div class="col-md-3">
-        <div class="stat-card">
+        <div class="stat-card p-3 bg-white rounded-4 border shadow-xs">
             <span class="text-muted fw-bold small text-uppercase d-block mb-1">Total Sales Revenue</span>
             <h3 class="fw-bold text-primary mb-0">₹{{ total_sales|floatformat:2 }}</h3>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="stat-card">
-            <span class="text-muted fw-bold small text-uppercase d-block mb-1">Cash Collections</span>
+        <div class="stat-card p-3 bg-white rounded-4 border shadow-xs">
+            <span class="text-muted fw-bold small text-uppercase d-block mb-1">💵 Cash Collections</span>
             <h3 class="fw-bold text-success mb-0">₹{{ cash_sales|floatformat:2 }}</h3>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="stat-card">
-            <span class="text-muted fw-bold small text-uppercase d-block mb-1">UPI / QR Received</span>
+        <div class="stat-card p-3 bg-white rounded-4 border shadow-xs">
+            <span class="text-muted fw-bold small text-uppercase d-block mb-1">📱 UPI / QR Received</span>
             <h3 class="fw-bold text-info mb-0">₹{{ upi_sales|floatformat:2 }}</h3>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="stat-card">
-            <span class="text-muted fw-bold small text-uppercase d-block mb-1">GST Tax Collected</span>
-            <h3 class="fw-bold text-dark mb-0">₹{{ total_gst|floatformat:2 }}</h3>
+        <div class="stat-card p-3 bg-white rounded-4 border shadow-xs border-warning">
+            <span class="text-muted fw-bold small text-uppercase d-block mb-1 text-warning">📕 Customer Khata Credit</span>
+            <h3 class="fw-bold text-warning mb-0">₹{{ khata_sales|floatformat:2 }}</h3>
         </div>
     </div>
 </div>

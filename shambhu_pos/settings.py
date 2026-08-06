@@ -171,7 +171,6 @@ USE_SUPABASE_STORAGE = os.environ.get('USE_SUPABASE_STORAGE', 'True').lower() in
 MEDIA_ROOT = BASE_DIR / 'media'
 
 if USE_SUPABASE_STORAGE:
-    DEFAULT_FILE_STORAGE = 'shambhu_pos.supabase_storage.SupabaseStorage'
     STORAGES = {
         'default': {
             'BACKEND': 'shambhu_pos.supabase_storage.SupabaseStorage',

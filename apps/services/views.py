@@ -144,6 +144,7 @@ def recharge_view(request):
         if action == 'perform_recharge':
             provider_id = request.POST.get('provider_id')
             customer_number = request.POST.get('customer_number', '').strip()
+            customer_name = request.POST.get('customer_name', '').strip()
             amount = Decimal(request.POST.get('amount', '0.00'))
             commission = Decimal(request.POST.get('commission', '0.00'))
             payment_mode = request.POST.get('payment_mode', 'CASH')
@@ -184,6 +185,7 @@ def recharge_view(request):
                 tx = RechargeTransaction.objects.create(
                     provider=provider,
                     customer_number=customer_number,
+                    customer_name=customer_name or None,
                     amount=amount,
                     commission=commission,
                     payment_mode=payment_mode,
@@ -193,7 +195,9 @@ def recharge_view(request):
 
                 if payment_mode == 'KHATA':
                     from apps.customers.models import record_khata_credit
-                    record_khata_credit(customer_number, amount, f"Recharge {provider.name} ({customer_number})", request.user)
+                    # Build a rich identifier: "Name (number)" so Khata shows both
+                    khata_identifier = f"{customer_name} ({customer_number})" if customer_name else customer_number
+                    record_khata_credit(khata_identifier, amount, f"Recharge {provider.name} ({customer_number})", request.user)
 
                 log_action(request.user, "Perform Recharge", "Recharge", f"Recharged ₹{amount} ({payment_mode}) for {provider.name} ({customer_number})", request)
 

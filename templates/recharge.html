@@ -391,6 +391,7 @@
                     <th class="ps-4">Date & Time</th>
                     <th>Operator</th>
                     <th>Customer / VC Number</th>
+                    <th>Customer Name</th>
                     <th class="text-center">Payment Mode</th>
                     <th class="text-end">Recharge Amount (₹)</th>
                     <th class="text-end">Commission (₹)</th>
@@ -411,6 +412,16 @@
                     </td>
                     <td class="fw-bold font-monospace text-dark fs-6">
                         {{ tx.customer_number }}
+                    </td>
+                    <td class="fw-medium text-dark">
+                        {% if tx.customer_name %}
+                            <span class="d-flex align-items-center gap-1">
+                                <i class="fa-solid fa-user-tag text-warning small"></i>
+                                {{ tx.customer_name }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted small">—</span>
+                        {% endif %}
                     </td>
                     <td class="text-center">
                         {% if tx.payment_mode == 'ONLINE' %}
@@ -445,7 +456,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center py-5 text-muted">
+                    <td colspan="9" class="text-center py-5 text-muted">
                         <div class="py-3">
                             <i class="fa-solid fa-mobile-screen fs-1 text-secondary opacity-25 mb-3"></i>
                             <h6 class="fw-bold text-dark">No Recharge Transactions Found</h6>
@@ -542,6 +553,25 @@
                             {% endfor %}
                         </div>
                         {% endif %}
+                    </div>
+
+                    <!-- Customer Name (optional, goes to Khata book) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted text-uppercase" for="recharge_customer_name_input">
+                            <i class="fa-solid fa-user me-1 text-warning"></i> Customer Name
+                            <span class="badge bg-warning bg-opacity-20 text-dark border border-warning border-opacity-25 rounded-pill px-2 ms-1" style="font-size: 0.7rem;">Optional · Goes to Khata</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0"><i class="fa-solid fa-address-card text-muted"></i></span>
+                            <input type="text" name="customer_name" id="recharge_customer_name_input"
+                                   class="form-control bg-light border-0 py-2.5 fw-bold"
+                                   placeholder="e.g. Ramesh Patil, Suresh Kumar..."
+                                   autocomplete="off">
+                        </div>
+                        <div class="mt-1 small text-muted" style="font-size: 0.75rem;">
+                            <i class="fa-solid fa-circle-info me-1 text-info"></i>
+                            If entered, the customer will be created / updated in the <strong>Khata Book</strong> with this name.
+                        </div>
                     </div>
 
                     <!-- Quick Plan Amount Select Chips -->

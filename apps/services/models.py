@@ -93,6 +93,7 @@ class RechargeTransaction(models.Model):
 
     provider = models.ForeignKey(RechargeProvider, on_delete=models.CASCADE, related_name='transactions')
     customer_number = models.CharField(max_length=30, help_text="Mobile Number or DTH VC / Subscriber ID")
+    customer_name = models.CharField(max_length=150, blank=True, null=True, help_text="Optional: Customer name for Khata book reference")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     commission = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     payment_mode = models.CharField(max_length=20, choices=PAYMENT_MODE_CHOICES, default='CASH')

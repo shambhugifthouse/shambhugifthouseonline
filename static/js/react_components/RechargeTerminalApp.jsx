@@ -163,11 +163,11 @@ function RechargeTerminalApp() {
       </div>
 
       <div className="row g-4">
-        {/* LEFT COLUMN: Operator, Payment Mode & Number Input */}
+        {/* LEFT COLUMN: Operator, Customer Details, Payment Mode & Number Input */}
         <div className="col-lg-5">
           <div className="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <h5 className="fw-bold text-dark mb-3 font-heading">
-              Select Operator & Payment Details
+              Select Operator & Customer Details
             </h5>
 
             {/* Operator Grid */}
@@ -190,38 +190,10 @@ function RechargeTerminalApp() {
               ))}
             </div>
 
-            {/* Payment Mode Choice: Cash vs Online vs Khata */}
-            <div className="mb-3">
-              <label className="form-label fw-bold small text-secondary">Payment Received Mode</label>
-              <div className="btn-group w-100 p-1 rounded-3 bg-light border" role="group">
-                <button
-                  type="button"
-                  className={`btn btn-sm py-2 fw-bold rounded-2 ${paymentMode === 'CASH' ? 'btn-success text-white shadow-xs' : 'btn-light text-secondary'}`}
-                  onClick={() => setPaymentMode('CASH')}
-                >
-                  💵 Cash
-                </button>
-                <button
-                  type="button"
-                  className={`btn btn-sm py-2 fw-bold rounded-2 ${paymentMode === 'ONLINE' ? 'btn-primary text-white shadow-xs' : 'btn-light text-secondary'}`}
-                  onClick={() => setPaymentMode('ONLINE')}
-                >
-                  📱 Online / UPI
-                </button>
-                <button
-                  type="button"
-                  className={`btn btn-sm py-2 fw-bold rounded-2 ${paymentMode === 'KHATA' ? 'btn-warning text-dark shadow-xs' : 'btn-light text-secondary'}`}
-                  onClick={() => setPaymentMode('KHATA')}
-                >
-                  📕 Khata Credit
-                </button>
-              </div>
-            </div>
-
-            {/* Input Form */}
+            {/* Customer / Username Input */}
             <div className="mb-3">
               <label className="form-label fw-bold small text-secondary">
-                <i className="fa-solid fa-user text-warning me-1"></i> Customer Name / Username <span className="text-danger">*</span>
+                <i className="fa-solid fa-user text-primary me-1"></i> Customer Name / Username <span className="text-danger">*</span>
               </label>
               <div className="input-group input-group-lg">
                 <span className="input-group-text bg-light text-muted border-end-0">
@@ -238,6 +210,7 @@ function RechargeTerminalApp() {
               </div>
             </div>
 
+            {/* Mobile / DTH Number Input */}
             <div className="mb-3">
               <label className="form-label fw-bold small text-secondary">
                 {serviceType === 'mobile' ? '10-Digit Mobile Number' : 'DTH Customer ID / VC Number'}
@@ -257,7 +230,8 @@ function RechargeTerminalApp() {
               </div>
             </div>
 
-            <div className="mb-4">
+            {/* Recharge Amount Input */}
+            <div className="mb-3">
               <label className="form-label fw-bold small text-secondary">Recharge Amount (₹)</label>
               <div className="input-group input-group-lg">
                 <span className="input-group-text bg-light border-0 fw-bold">₹</span>
@@ -271,6 +245,37 @@ function RechargeTerminalApp() {
               </div>
             </div>
 
+            {/* Payment Mode Choice: Cash vs Online vs Khata */}
+            <div className="mb-4">
+              <label className="form-label fw-bold small text-secondary d-flex justify-content-between align-items-center">
+                <span>Payment Mode</span>
+                <span className="badge bg-light text-muted border font-monospace">Cash / Online / Khata</span>
+              </label>
+              <div className="btn-group w-100 p-1 rounded-3 bg-light border" role="group">
+                <button
+                  type="button"
+                  className={`btn btn-sm py-2.5 fw-bold rounded-2 ${paymentMode === 'CASH' ? 'btn-success text-white shadow-xs' : 'btn-light text-secondary'}`}
+                  onClick={() => setPaymentMode('CASH')}
+                >
+                  💵 Cash
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-sm py-2.5 fw-bold rounded-2 ${paymentMode === 'ONLINE' ? 'btn-primary text-white shadow-xs' : 'btn-light text-secondary'}`}
+                  onClick={() => setPaymentMode('ONLINE')}
+                >
+                  📱 Online
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-sm py-2.5 fw-bold rounded-2 ${paymentMode === 'KHATA' ? 'btn-warning text-dark shadow-xs' : 'btn-light text-secondary'}`}
+                  onClick={() => setPaymentMode('KHATA')}
+                >
+                  📕 Khata
+                </button>
+              </div>
+            </div>
+
             {/* Action Buttons: Instant Recharge & Quick Recharge Side-by-Side */}
             <div className="d-flex gap-2">
               <button
@@ -279,7 +284,7 @@ function RechargeTerminalApp() {
                 disabled={isSubmitting}
                 style={{ background: 'linear-gradient(135deg, #F5DA8A 0%, #E5B84B 100%)', border: 'none', color: '#09241B' }}
               >
-                <i className="fa-solid fa-bolt me-1.5"></i> Instant Recharge
+                <i className="fa-solid fa-bolt me-1.5"></i> INSTANT RECHARGE NOW
               </button>
               
               <button

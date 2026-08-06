@@ -785,14 +785,16 @@ function openTopupModal(providerId, providerName) {
 }
 </script>
 
-<!-- React 18 Script -->
-<script type="text/babel" src="{% static 'js/react_components/RechargeTerminalApp.jsx' %}"></script>
+<!-- React 18 Native Script (No Babel Dependency) -->
+<script src="{% static 'js/react_components/RechargeTerminalApp.js' %}"></script>
 
-<script type="text/babel">
-    const rechargeRoot = document.getElementById('react-recharge-root');
-    if (rechargeRoot) {
-        const root = ReactDOM.createRoot(rechargeRoot);
-        root.render(<RechargeTerminalApp />);
-    }
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rechargeRoot = document.getElementById('react-recharge-root');
+        if (rechargeRoot && window.RechargeTerminalApp && typeof ReactDOM !== 'undefined') {
+            const root = ReactDOM.createRoot(rechargeRoot);
+            root.render(React.createElement(window.RechargeTerminalApp));
+        }
+    });
 </script>
 {% endblock %}

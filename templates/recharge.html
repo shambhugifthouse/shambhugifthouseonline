@@ -555,22 +555,21 @@
                         {% endif %}
                     </div>
 
-                    <!-- Customer Name (optional, goes to Khata book) -->
+                    <!-- Customer Name / Username -->
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted text-uppercase" for="recharge_customer_name_input">
-                            <i class="fa-solid fa-user me-1 text-warning"></i> Customer Name
-                            <span class="badge bg-warning bg-opacity-20 text-dark border border-warning border-opacity-25 rounded-pill px-2 ms-1" style="font-size: 0.7rem;">Optional · Goes to Khata</span>
+                            <i class="fa-solid fa-user me-1 text-warning"></i> Customer Name / Username <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0"><i class="fa-solid fa-address-card text-muted"></i></span>
                             <input type="text" name="customer_name" id="recharge_customer_name_input"
                                    class="form-control bg-light border-0 py-2.5 fw-bold"
                                    placeholder="e.g. Ramesh Patil, Suresh Kumar..."
-                                   autocomplete="off">
+                                   required autocomplete="off">
                         </div>
                         <div class="mt-1 small text-muted" style="font-size: 0.75rem;">
                             <i class="fa-solid fa-circle-info me-1 text-info"></i>
-                            If entered, the customer will be created / updated in the <strong>Khata Book</strong> with this name.
+                            Customer / User name will be recorded for this transaction & updated in the <strong>Khata Book</strong>.
                         </div>
                     </div>
 

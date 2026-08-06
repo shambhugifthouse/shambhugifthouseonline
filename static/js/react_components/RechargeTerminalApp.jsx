@@ -5,8 +5,9 @@ function RechargeTerminalApp() {
   const [serviceType, setServiceType] = useState('mobile'); // 'mobile' or 'dth'
   const [operator, setOperator] = useState('jio');
   const [number, setNumber] = useState('');
+  const [customerName, setCustomerName] = useState('');
   const [amount, setAmount] = useState('');
-  const [paymentMode, setPaymentMode] = useState('CASH'); // 'CASH' or 'ONLINE'
+  const [paymentMode, setPaymentMode] = useState('CASH'); // 'CASH' or 'ONLINE' or 'KHATA'
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [activePlanCategory, setActivePlanCategory] = useState('Unlimited');
   const [isConfirming, setIsConfirming] = useState(false);
@@ -44,6 +45,10 @@ function RechargeTerminalApp() {
   };
 
   const handleRechargeSubmit = () => {
+    if (!customerName || !customerName.trim()) {
+      showToast('Please enter Customer Name / Username', 'warning');
+      return;
+    }
     if (!number || number.length < 10) {
       showToast('Please enter a valid 10-digit number / VC ID', 'warning');
       return;
@@ -105,6 +110,12 @@ function RechargeTerminalApp() {
     numberInput.name = 'customer_number';
     numberInput.value = number;
     form.appendChild(numberInput);
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'hidden';
+    nameInput.name = 'customer_name';
+    nameInput.value = customerName.trim();
+    form.appendChild(nameInput);
 
     const amountInput = document.createElement('input');
     amountInput.type = 'hidden';
@@ -208,6 +219,25 @@ function RechargeTerminalApp() {
             </div>
 
             {/* Input Form */}
+            <div className="mb-3">
+              <label className="form-label fw-bold small text-secondary">
+                <i className="fa-solid fa-user text-warning me-1"></i> Customer Name / Username <span className="text-danger">*</span>
+              </label>
+              <div className="input-group input-group-lg">
+                <span className="input-group-text bg-light text-muted border-end-0">
+                  <i className="fa-solid fa-address-card"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control border-start-0 fs-6 fw-bold"
+                  placeholder="Enter Customer Name / Username"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
             <div className="mb-3">
               <label className="form-label fw-bold small text-secondary">
                 {serviceType === 'mobile' ? '10-Digit Mobile Number' : 'DTH Customer ID / VC Number'}
@@ -326,6 +356,8 @@ function RechargeTerminalApp() {
               </div>
               <div className="modal-body p-4 text-center">
                 <div className="p-3 rounded-4 mb-3" style={{ background: '#09241B', color: '#E5B84B' }}>
+                  <small className="text-uppercase font-monospace d-block text-warning opacity-75">Customer / Username</small>
+                  <h5 className="fw-bold text-white mb-2">{customerName}</h5>
                   <small className="text-uppercase font-monospace d-block text-warning opacity-75">Target Number</small>
                   <h3 className="fw-extrabold mb-0">{number}</h3>
                   <small className="text-white-50">{operator.toUpperCase()} Operator • Mode: {paymentMode}</small>
